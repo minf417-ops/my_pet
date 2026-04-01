@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>萌宠时光 - 写日记</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Nunito:wght@400;600;700;800&display=swap');
+        
+        :root {
+            --primary: #FF9A76;
+            --primary-light: #FFD4C4;
+            --primary-dark: #FF7B54;
+            --secondary: #A8E6CF;
+            --secondary-light: #DCFAF0;
+            --accent: #FFD93D;
+            --bg-cream: #FFFBF7;
+            --bg-white: #FFFFFF;
+            --text-dark: #4A4A4A;
+            --text-medium: #7A7A7A;
+            --text-light: #AAAAAA;
+            --shadow-soft: 0 8px 32px rgba(255, 154, 118, 0.15);
+            --radius-sm: 16px;
+            --radius-md: 24px;
+            --radius-lg: 32px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Nunito', 'ZCOOL KuaiLe', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-cream);
+            color: var(--text-dark);
+            min-height: 100vh;
+        }
+
+        .app-container {
+            max-width: 480px;
+            margin: 0 auto;
+            min-height: 100vh;
+            background: var(--bg-white);
+            position: relative;
+            box-shadow: 0 0 80px rgba(255, 154, 118, 0.2);
+        }
+
+        /* 头部 */
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            padding: 16px 20px;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-btn {
+            padding: 10px 20px;
+            border-radius: 20px;
+            border: none;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .header-btn.cancel {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .header-btn.publish {
+            background: white;
+            color: var(--primary);
+        }
+
+        .header-title {
+            font-size: 20px;
+            font-weight: 800;
+            font-family: 'ZCOOL KuaiLe', cursive;
+        }
+
+        /* 主要内容 */
+        .main-content {
+            padding: 20px;
+            padding-bottom: 100px;
+        }
+
+        /* 宠物选择 */
+        .pet-select-section {
+            margin-bottom: 24px;
+        }
+
+        .section-label {
+            font-size: 14px;
+            color: var(--text-light);
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .pet-list {
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+        }
+
+        .pet-option {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 16px;
+            border-radius: var(--radius-md);
+            border: 3px solid transparent;
+            background: var(--bg-cream);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .pet-option.active {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .pet-option-img {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .pet-option-name {
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        /* 标签选择 */
+        .tag-section {
+            margin-bottom: 24px;
+        }
+
+        .tag-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .tag {
+            padding: 10px 20px;
+            border-radius: 25px;
+            border: 2px solid #E8E8E8;
+            background: white;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .tag.active {
+            border-color: var(--primary);
+            background: var(--primary-light);
+            color: var(--primary-dark);
+        }
+
+        .tag:hover {
+            border-color: var(--primary-light);
+        }
+
+        /* 文本输入 */
+        .content-section {
+            margin-bottom: 24px;
+        }
+
+        .content-input {
+            width: 100%;
+            min-height: 200px;
+            padding: 20px;
+            border: 2px solid #F0F0F0;
+            border-radius: var(--radius-md);
+            font-size: 16px;
+            line-height: 1.8;
+            resize: vertical;
+            font-family: inherit;
+            transition: all 0.3s ease;
+        }
+
+        .content-input:focus {
+            outline: none;
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 4px rgba(255, 154, 118, 0.1);
+        }
+
+        .content-input::placeholder {
+            color: var(--text-light);
+        }
+
+        /* 心情选择 */
+        .mood-section {
+            margin-bottom: 24px;
+        }
+
+        .mood-list {
+            display: flex;
+            justify-content: space-around;
+            padding: 16px;
+            background: var(--bg-cream);
+            border-radius: var(--radius-md);
+        }
+
+        .mood-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 8px 16px;
+            border-radius: var(--radius-sm);
+        }
+
+        .mood-item:hover {
+            background: white;
+            transform: scale(1.1);
+        }
+
+        .mood-item.active {
+            background: white;
+            box-shadow: var(--shadow-soft);
+        }
+
+        .mood-emoji {
+            font-size: 36px;
+        }
+
+        .mood-text {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-medium);
+        }
+
+        /* 图片上传 */
+        .photo-section {
+            margin-bottom: 24px;
+        }
+
+        .photo-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .photo-item {
+            aspect-ratio: 1;
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .photo-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .photo-item.add {
+            border: 3px dashed var(--primary-light);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background: var(--bg-cream);
+            transition: all 0.3s ease;
+        }
+
+        .photo-item.add:hover {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .add-icon {
+            font-size: 32px;
+            color: var(--primary);
+        }
+
+        .add-text {
+            font-size: 12px;
+            color: var(--text-medium);
+            font-weight: 600;
+        }
+
+        .photo-remove {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* 位置 */
+        .location-section {
+            margin-bottom: 24px;
+        }
+
+        .location-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 20px;
+            border: 2px solid #F0F0F0;
+            border-radius: var(--radius-md);
+            background: white;
+            font-size: 15px;
+            color: var(--text-medium);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .location-btn:hover {
+            border-color: var(--primary-light);
+        }
+
+        .location-btn.active {
+            border-color: var(--primary);
+            background: var(--primary-light);
+            color: var(--primary-dark);
+        }
+
+        /* 隐私设置 */
+        .privacy-section {
+            background: var(--bg-cream);
+            border-radius: var(--radius-md);
+            padding: 20px;
+        }
+
+        .privacy-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: var(--text-dark);
+        }
+
+        .privacy-options {
+            display: flex;
+            gap: 12px;
+        }
+
+        .privacy-option {
+            flex: 1;
+            padding: 16px;
+            border: 2px solid transparent;
+            border-radius: var(--radius-sm);
+            background: white;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .privacy-option.active {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .privacy-icon {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .privacy-label {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 4px;
+        }
+
+        .privacy-desc {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+
+        /* 底部工具栏 */
+        .toolbar {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 480px;
+            background: white;
+            border-top: 1px solid #F0F0F0;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        .toolbar-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 8px 20px;
+            border: none;
+            background: none;
+            color: var(--text-medium);
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .toolbar-btn:hover {
+            color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .toolbar-icon {
+            font-size: 24px;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- 头部 -->
+        <header class="header">
+            <button class="header-btn cancel">取消</button>
+            <h1 class="header-title">写日记 📝</h1>
+            <button class="header-btn publish">发布</button>
+        </header>
+
+        <!-- 主要内容 -->
+        <main class="main-content">
+            <!-- 选择宠物 -->
+            <div class="pet-select-section">
+                <div class="section-label">选择宠物 🐾</div>
+                <div class="pet-list">
+                    <div class="pet-option active">
+                        <img src="https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=150" class="pet-option-img">
+                        <span class="pet-option-name">旺财</span>
+                    </div>
+                    <div class="pet-option">
+                        <img src="https://images.unsplash.com/photo-1574158622682-e40e69881006?w=150" class="pet-option-img">
+                        <span class="pet-option-name">咪咪</span>
+                    </div>
+                    <div class="pet-option">
+                        <img src="https://images.unsplash.com/photo-1425082661705-1834bfd09dca?w=150" class="pet-option-img">
+                        <span class="pet-option-name">球球</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 标签选择 -->
+            <div class="tag-section">
+                <div class="section-label">添加标签 🏷️</div>
+                <div class="tag-list">
+                    <span class="tag active">🌟 日常</span>
+                    <span class="tag">🍖 喂食</span>
+                    <span class="tag">💉 健康</span>
+                    <span class="tag">🎾 运动</span>
+                    <span class="tag">🛁 美容</span>
+                    <span class="tag">🏥 就医</span>
+                    <span class="tag">✨ 里程碑</span>
+                </div>
+            </div>
+
+            <!-- 文本输入 -->
+            <div class="content-section">
+                <textarea class="content-input" placeholder="记录今天和毛孩子的美好时光...&#10;&#10;比如：今天带旺财去公园玩，遇到了好多小伙伴！旺财特别开心，一直在草地上奔跑。还学会了和新朋友握手，太聪明了！"></textarea>
+            </div>
+
+            <!-- 心情 -->
+            <div class="mood-section">
+                <div class="section-label">今天的心情 💭</div>
+                <div class="mood-list">
+                    <div class="mood-item active">
+                        <span class="mood-emoji">😄</span>
+                        <span class="mood-text">开心</span>
+                    </div>
+                    <div class="mood-item">
+                        <span class="mood-emoji">😊</span>
+                        <span class="mood-text">满足</span>
+                    </div>
+                    <div class="mood-item">
+                        <span class="mood-emoji">🥰</span>
+                        <span class="mood-text">幸福</span>
+                    </div>
+                    <div class="mood-item">
+                        <span class="mood-emoji">😴</span>
+                        <span class="mood-text">疲倦</span>
+                    </div>
+                    <div class="mood-item">
+                        <span class="mood-emoji">😢</span>
+                        <span class="mood-text">难过</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 图片上传 -->
+            <div class="photo-section">
+                <div class="section-label">添加照片 📸</div>
+                <div class="photo-grid">
+                    <div class="photo-item">
+                        <img src="https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=300">
+                        <button class="photo-remove">×</button>
+                    </div>
+                    <div class="photo-item">
+                        <img src="https://images.unsplash.com/photo-1530281700549-e82e7bf110d6?w=300">
+                        <button class="photo-remove">×</button>
+                    </div>
+                    <div class="photo-item add">
+                        <span class="add-icon">+</span>
+                        <span class="add-text">添加</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 位置 -->
+            <div class="location-section">
+                <div class="section-label">添加位置 📍</div>
+                <button class="location-btn active">
+                    <span>📍</span>
+                    <span>中央公园 · 狗狗乐园</span>
+                </button>
+            </div>
+
+            <!-- 隐私设置 -->
+            <div class="privacy-section">
+                <div class="privacy-title">🔒 隐私设置</div>
+                <div class="privacy-options">
+                    <div class="privacy-option active">
+                        <div class="privacy-icon">🔒</div>
+                        <div class="privacy-label">仅自己</div>
+                        <div class="privacy-desc">私密记录</div>
+                    </div>
+                    <div class="privacy-option">
+                        <div class="privacy-icon">👥</div>
+                        <div class="privacy-label">好友</div>
+                        <div class="privacy-desc">仅好友可见</div>
+                    </div>
+                    <div class="privacy-option">
+                        <div class="privacy-icon">🌍</div>
+                        <div class="privacy-label">公开</div>
+                        <div class="privacy-desc">所有人可见</div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- 底部工具栏 -->
+        <div class="toolbar">
+            <button class="toolbar-btn">
+                <span class="toolbar-icon">😊</span>
+                <span>表情</span>
+            </button>
+            <button class="toolbar-btn">
+                <span class="toolbar-icon">#️⃣</span>
+                <span>话题</span>
+            </button>
+            <button class="toolbar-btn">
+                <span class="toolbar-icon">👤</span>
+                <span>@好友</span>
+            </button>
+            <button class="toolbar-btn">
+                <span class="toolbar-icon">🎨</span>
+                <span>贴纸</span>
+            </button>
+        </div>
+    </div>
+</body>
+</html>

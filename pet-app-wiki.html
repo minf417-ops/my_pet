@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>萌宠时光 - 宠物百科</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Nunito:wght@400;600;700;800&display=swap');
+        
+        :root {
+            --primary: #FF9A76;
+            --primary-light: #FFD4C4;
+            --primary-dark: #FF7B54;
+            --secondary: #A8E6CF;
+            --secondary-light: #DCFAF0;
+            --accent: #FFD93D;
+            --bg-cream: #FFFBF7;
+            --bg-white: #FFFFFF;
+            --text-dark: #4A4A4A;
+            --text-medium: #7A7A7A;
+            --text-light: #AAAAAA;
+            --shadow-soft: 0 8px 32px rgba(255, 154, 118, 0.15);
+            --radius-sm: 16px;
+            --radius-md: 24px;
+            --radius-lg: 32px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Nunito', 'ZCOOL KuaiLe', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-cream);
+            color: var(--text-dark);
+            min-height: 100vh;
+        }
+
+        .app-container {
+            max-width: 480px;
+            margin: 0 auto;
+            min-height: 100vh;
+            background: var(--bg-white);
+            position: relative;
+            box-shadow: 0 0 80px rgba(255, 154, 118, 0.2);
+        }
+
+        /* 头部 */
+        .header {
+            background: linear-gradient(135deg, #FFD93D 0%, #FFC107 100%);
+            padding: 20px;
+            border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+            color: var(--text-dark);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -40px;
+            right: -40px;
+            width: 150px;
+            height: 150px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .back-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5);
+            border: none;
+            color: var(--text-dark);
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .header-title {
+            font-size: 24px;
+            font-weight: 800;
+            font-family: 'ZCOOL KuaiLe', cursive;
+        }
+
+        /* 搜索框 */
+        .search-box {
+            position: relative;
+            z-index: 1;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 16px 20px 16px 50px;
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 16px;
+            background: white;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .search-input::placeholder {
+            color: var(--text-light);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 20px;
+        }
+
+        /* 主要内容 */
+        .main-content {
+            padding: 20px;
+            padding-bottom: 100px;
+        }
+
+        /* 分类网格 */
+        .category-section {
+            margin-bottom: 24px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 800;
+            margin-bottom: 16px;
+            font-family: 'ZCOOL KuaiLe', cursive;
+        }
+
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .category-card {
+            background: white;
+            border-radius: var(--radius-md);
+            padding: 20px;
+            text-align: center;
+            box-shadow: var(--shadow-soft);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .category-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+        }
+
+        .category-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            margin: 0 auto 12px;
+        }
+
+        .category-card:nth-child(1) .category-icon { background: #FFE5E5; }
+        .category-card:nth-child(2) .category-icon { background: #E5F3FF; }
+        .category-card:nth-child(3) .category-icon { background: #E8F5E9; }
+        .category-card:nth-child(4) .category-icon { background: #FFF9E5; }
+
+        .category-name {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .category-count {
+            font-size: 13px;
+            color: var(--text-light);
+        }
+
+        /* 热门品种 */
+        .breeds-section {
+            margin-bottom: 24px;
+        }
+
+        .breeds-scroll {
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+        }
+
+        .breed-card {
+            flex-shrink: 0;
+            width: 140px;
+            background: white;
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            box-shadow: var(--shadow-soft);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .breed-card:hover {
+            transform: scale(1.05);
+        }
+
+        .breed-image {
+            width: 100%;
+            height: 100px;
+            object-fit: cover;
+        }
+
+        .breed-info {
+            padding: 12px;
+        }
+
+        .breed-name {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .breed-tags {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .breed-tag {
+            padding: 4px 8px;
+            border-radius: 10px;
+            font-size: 11px;
+            background: var(--bg-cream);
+            color: var(--text-medium);
+        }
+
+        /* 养护知识 */
+        .tips-section {
+            margin-bottom: 24px;
+        }
+
+        .tips-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .tip-card {
+            display: flex;
+            gap: 16px;
+            background: white;
+            border-radius: var(--radius-md);
+            padding: 16px;
+            box-shadow: var(--shadow-soft);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .tip-card:hover {
+            transform: translateX(4px);
+        }
+
+        .tip-image {
+            width: 80px;
+            height: 80px;
+            border-radius: var(--radius-sm);
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+
+        .tip-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .tip-category {
+            font-size: 12px;
+            color: var(--primary);
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .tip-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+
+        .tip-meta {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 13px;
+            color: var(--text-light);
+        }
+
+        /* 紧急救助 */
+        .emergency-section {
+            background: linear-gradient(135deg, #FFEBEE 0%, #FFCDD2 100%);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+
+        .emergency-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 18px;
+            font-weight: 800;
+            margin-bottom: 16px;
+            color: #C62828;
+        }
+
+        .emergency-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .emergency-item {
+            background: white;
+            border-radius: var(--radius-sm);
+            padding: 16px 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .emergency-item:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .emergency-icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .emergency-label {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        /* 底部导航 */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 480px;
+            background: white;
+            border-top: 2px solid #FFF9E5;
+            padding: 12px 20px 24px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            cursor: pointer;
+            border: none;
+            background: none;
+            color: var(--text-light);
+            transition: all 0.3s ease;
+        }
+
+        .nav-item.active {
+            color: #FFC107;
+            transform: translateY(-4px);
+        }
+
+        .nav-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            background: transparent;
+            transition: all 0.3s ease;
+        }
+
+        .nav-item.active .nav-icon {
+            background: #FFF9E5;
+            box-shadow: 0 4px 12px rgba(255, 193, 7, 0.3);
+        }
+
+        .nav-text {
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .nav-add {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #FFD93D 0%, #FFC107 100%);
+            color: var(--text-dark);
+            font-size: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: -32px;
+            box-shadow: 0 8px 24px rgba(255, 193, 7, 0.4);
+            cursor: pointer;
+            border: 4px solid white;
+            transition: all 0.3s ease;
+        }
+
+        .nav-add:hover {
+            transform: scale(1.1) rotate(90deg);
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- 头部 -->
+        <header class="header">
+            <div class="header-top">
+                <button class="back-btn">←</button>
+                <h1 class="header-title">📚 萌宠百科</h1>
+                <button class="back-btn">🔖</button>
+            </div>
+            
+            <div class="search-box">
+                <span class="search-icon">🔍</span>
+                <input type="text" class="search-input" placeholder="搜索品种、疾病、养护知识...">
+            </div>
+        </header>
+
+        <!-- 主要内容 -->
+        <main class="main-content">
+            <!-- 分类 -->
+            <div class="category-section">
+                <h2 class="section-title">🎯 知识分类</h2>
+                
+                <div class="category-grid">
+                    <div class="category-card">
+                        <div class="category-icon">🐕</div>
+                        <div class="category-name">狗狗百科</div>
+                        <div class="category-count">128个品种</div>
+                    </div>
+                    
+                    <div class="category-card">
+                        <div class="category-icon">🐱</div>
+                        <div class="category-name">猫咪百科</div>
+                        <div class="category-count">86个品种</div>
+                    </div>
+                    
+                    <div class="category-card">
+                        <div class="category-icon">🥗</div>
+                        <div class="category-name">饮食营养</div>
+                        <div class="category-count">256篇文章</div>
+                    </div>
+                    
+                    <div class="category-card">
+                        <div class="category-icon">🏥</div>
+                        <div class="category-name">疾病防治</div>
+                        <div class="category-count">168篇文章</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 紧急救助 -->
+            <div class="emergency-section">
+                <div class="emergency-title">
+                    <span>🚨</span>
+                    <span>紧急情况处理</span>
+                </div>
+                
+                <div class="emergency-grid">
+                    <div class="emergency-item">
+                        <div class="emergency-icon">🤢</div>
+                        <div class="emergency-label">误食中毒</div>
+                    </div>
+                    
+                    <div class="emergency-item">
+                        <div class="emergency-icon">🌡️</div>
+                        <div class="emergency-label">高烧不退</div>
+                    </div>
+                    
+                    <div class="emergency-item">
+                        <div class="emergency-icon">💔</div>
+                        <div class="emergency-label">意外受伤</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 热门品种 -->
+            <div class="breeds-section">
+                <h2 class="section-title">🔥 热门品种</h2>
+                
+                <div class="breeds-scroll">
+                    <div class="breed-card">
+                        <img src="https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=300" class="breed-image">
+                        <div class="breed-info">
+                            <div class="breed-name">金毛寻回犬</div>
+                            <div class="breed-tags">
+                                <span class="breed-tag">温顺</span>
+                                <span class="breed-tag">大型犬</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="breed-card">
+                        <img src="https://images.unsplash.com/photo-1574158622682-e40e69881006?w=300" class="breed-image">
+                        <div class="breed-info">
+                            <div class="breed-name">英国短毛猫</div>
+                            <div class="breed-tags">
+                                <span class="breed-tag">安静</span>
+                                <span class="breed-tag">易养</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="breed-card">
+                        <img src="https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?w=300" class="breed-image">
+                        <div class="breed-info">
+                            <div class="breed-name">柯基犬</div>
+                            <div class="breed-tags">
+                                <span class="breed-tag">活泼</span>
+                                <span class="breed-tag">小型犬</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="breed-card">
+                        <img src="https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=300" class="breed-image">
+                        <div class="breed-info">
+                            <div class="breed-name">布偶猫</div>
+                            <div class="breed-tags">
+                                <span class="breed-tag">粘人</span>
+                                <span class="breed-tag">长毛</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 养护知识 -->
+            <div class="tips-section">
+                <h2 class="section-title">💡 养护小知识</h2>
+                
+                <div class="tips-list">
+                    <div class="tip-card">
+                        <img src="https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=200" class="tip-image">
+                        <div class="tip-content">
+                            <div class="tip-category">饮食营养</div>
+                            <div class="tip-title">狗狗不能吃的10种食物，你都知道吗？</div>
+                            <div class="tip-meta">
+                                <span>👁️ 2.3k阅读</span>
+                                <span>❤️ 186</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="tip-card">
+                        <img src="https://images.unsplash.com/photo-1574158622682-e40e69881006?w=200" class="tip-image">
+                        <div class="tip-content">
+                            <div class="tip-category">日常护理</div>
+                            <div class="tip-title">新手养猫必看：猫咪驱虫全攻略</div>
+                            <div class="tip-meta">
+                                <span>👁️ 1.8k阅读</span>
+                                <span>❤️ 142</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="tip-card">
+                        <img src="https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=200" class="tip-image">
+                        <div class="tip-content">
+                            <div class="tip-category">训练技巧</div>
+                            <div class="tip-title">如何训练狗狗定点大小便？5步搞定！</div>
+                            <div class="tip-meta">
+                                <span>👁️ 3.1k阅读</span>
+                                <span>❤️ 256</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- 底部导航 -->
+        <nav class="bottom-nav">
+            <button class="nav-item">
+                <span class="nav-icon">🏠</span>
+                <span class="nav-text">首页</span>
+            </button>
+            <button class="nav-item">
+                <span class="nav-icon">📖</span>
+                <span class="nav-text">日记</span>
+            </button>
+            <button class="nav-add">+</button>
+            <button class="nav-item">
+                <span class="nav-icon">💊</span>
+                <span class="nav-text">健康</span>
+            </button>
+            <button class="nav-item active">
+                <span class="nav-icon">📚</span>
+                <span class="nav-text">百科</span>
+            </button>
+        </nav>
+    </div>
+</body>
+</html>

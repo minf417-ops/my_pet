@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="萌宠管家">
+<meta name="theme-color" content="#FF9A76">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="manifest" href="/manifest.json">
+<link rel="apple-touch-icon" href="/icon-192.svg">
+<title>萌宠管家</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--c1:#FF9A76;--c1l:#FFD4C4;--c1d:#FF7B54;--c2:#A8E6CF;--c2l:#DCFAF0;--bg:#FFFBF7;--white:#fff;--t1:#333;--t2:#666;--t3:#999;--r:16px;--r2:24px}
+[data-theme=coral]{--c1:#FF9A76;--c1l:#FFD4C4;--c1d:#FF7B54;--c2:#A8E6CF;--c2l:#DCFAF0;--bg:#FFFBF7}
+[data-theme=ocean]{--c1:#5B9BD5;--c1l:#BDD7EE;--c1d:#2E75B6;--c2:#A8D8EA;--c2l:#D6EFF8;--bg:#F5F9FC}
+[data-theme=forest]{--c1:#6BAF7A;--c1l:#C5E1C9;--c1d:#4A8C5C;--c2:#B5D99C;--c2l:#E0F0D6;--bg:#F7FBF5}
+[data-theme=lavender]{--c1:#9B8EC4;--c1l:#D4CCE6;--c1d:#7B6BA8;--c2:#C9B8E8;--c2l:#E8DFF5;--bg:#F9F7FC}
+[data-theme=rose]{--c1:#E07B8C;--c1l:#F2C4CB;--c1d:#C45B6E;--c2:#F5B7C5;--c2l:#FDE4EA;--bg:#FDF6F8}
+[data-theme=dark]{--c1:#FF9A76;--c1l:#553D33;--c1d:#FF7B54;--c2:#4A8C5C;--c2l:#2A3A2D;--bg:#1A1A2E;--white:#16213E;--t1:#E0E0E0;--t2:#AAAAAA;--t3:#777777}
+@media(prefers-color-scheme:dark){[data-theme=auto]{--c1:#FF9A76;--c1l:#553D33;--c1d:#FF7B54;--c2:#4A8C5C;--c2l:#2A3A2D;--bg:#1A1A2E;--white:#16213E;--t1:#E0E0E0;--t2:#AAAAAA;--t3:#777777}}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--t1);min-height:100vh;overflow-x:hidden;-webkit-tap-highlight-color:transparent}
+.app{max-width:480px;margin:0 auto;min-height:100vh;background:var(--white);position:relative;box-shadow:0 0 40px rgba(0,0,0,.06)}
+.page{display:none;padding-bottom:80px;min-height:100vh}.page.active{display:block;animation:fadeIn .25s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.hd{background:linear-gradient(135deg,var(--c1),var(--c1d));padding:max(env(safe-area-inset-top),16px) 20px 16px;color:#fff;position:sticky;top:0;z-index:100}
+.hd-row{display:flex;justify-content:space-between;align-items:center}
+.hd h1{font-size:20px;font-weight:700}.hd-btn{background:rgba(255,255,255,.2);border:none;color:#fff;width:36px;height:36px;border-radius:50%;font-size:18px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.hd-green{background:linear-gradient(135deg,var(--c2),#7DD3C0)}
+.card{background:var(--white);border-radius:var(--r);padding:16px;margin:12px 16px;box-shadow:0 2px 12px rgba(0,0,0,.06)}
+.card-title{font-size:16px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.card-title .more{margin-left:auto;font-size:13px;color:var(--c1);font-weight:600;cursor:pointer}
+.form-group{margin-bottom:16px}
+.form-label{font-size:13px;color:var(--t3);margin-bottom:6px;display:block;font-weight:600}
+.form-input{width:100%;padding:12px;border:1.5px solid #eee;border-radius:var(--r);font-size:15px;font-family:inherit;background:var(--bg);transition:border .2s;-webkit-appearance:none;appearance:none}
+.form-input:focus{outline:none;border-color:var(--c1l)}
+select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23999' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}
+textarea.form-input{min-height:80px;resize:vertical;line-height:1.6}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.btn{padding:12px 24px;border:none;border-radius:var(--r);font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;-webkit-tap-highlight-color:transparent}
+.btn-primary{background:var(--c1);color:#fff}.btn-primary:active{background:var(--c1d);transform:scale(.98)}
+.btn-outline{background:none;border:1.5px solid #ddd;color:var(--t2)}.btn-outline:active{background:#f5f5f5}
+.btn-danger{background:#FF5252;color:#fff}.btn-danger:active{background:#D32F2F}
+.btn-block{width:100%;display:block}.btn-sm{padding:8px 16px;font-size:13px}
+/* Pet bar */
+.pet-bar{display:flex;gap:12px;padding:12px 20px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.pet-chip{display:flex;align-items:center;gap:8px;padding:8px 16px 8px 8px;border-radius:40px;background:rgba(255,255,255,.2);cursor:pointer;white-space:nowrap;flex-shrink:0;border:2px solid transparent;transition:all .2s}
+.pet-chip.active{background:rgba(255,255,255,.35);border-color:rgba(255,255,255,.6)}
+.pet-chip .chip-avatar{width:32px;height:32px;border-radius:50%;object-fit:cover;background:var(--c1l);display:flex;align-items:center;justify-content:center;font-size:20px;overflow:hidden;flex-shrink:0}
+.pet-chip .chip-avatar img{width:100%;height:100%;object-fit:cover}
+.pet-chip span{font-size:14px;font-weight:600;color:#fff}
+.pet-chip-add{font-size:20px;width:32px;height:32px;border-radius:50%;border:2px dashed rgba(255,255,255,.5);display:flex;align-items:center;justify-content:center;color:#fff;background:none;cursor:pointer;flex-shrink:0}
+/* Quick actions */
+.actions{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:0 16px;margin-top:-8px}
+.act-btn{display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px 4px;background:var(--white);border:none;border-radius:var(--r);box-shadow:0 2px 12px rgba(0,0,0,.06);cursor:pointer;font-family:inherit;transition:transform .15s;-webkit-tap-highlight-color:transparent}
+.act-btn:active{transform:scale(.95)}
+.act-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px}
+.act-text{font-size:12px;font-weight:600;color:var(--t2)}
+/* Reminder & Record */
+.remind{display:flex;align-items:center;gap:12px;padding:12px;background:var(--bg);border-radius:var(--r);margin-bottom:8px;cursor:pointer}
+.remind-icon{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.remind-info{flex:1;min-width:0}.remind-info h4{font-size:14px;font-weight:700;margin-bottom:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.remind-info p{font-size:12px;color:var(--t3)}
+.remind-days{font-size:12px;font-weight:700;padding:4px 10px;border-radius:20px;white-space:nowrap}
+.rec{display:flex;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid #f0f0f0;cursor:pointer}
+.rec:last-child{border-bottom:none}
+.rec-icon{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.rec-info{flex:1;min-width:0}.rec-info h4{font-size:14px;font-weight:600;margin-bottom:2px}
+.rec-info p{font-size:12px;color:var(--t3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rec-date{font-size:12px;color:var(--t3);white-space:nowrap}
+.rec-imgs{display:flex;gap:4px;margin-top:6px}.rec-imgs img{width:48px;height:48px;border-radius:8px;object-fit:cover}
+/* Tabs */
+.tabs{display:flex;gap:8px;padding:0 16px;margin-bottom:12px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.tab{padding:8px 18px;border-radius:20px;border:none;background:var(--bg);font-size:13px;font-weight:600;color:var(--t3);cursor:pointer;white-space:nowrap;font-family:inherit;transition:all .2s}
+.tab.active{background:var(--c1);color:#fff}
+/* Modal */
+.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.4);z-index:200;display:none;align-items:flex-end;justify-content:center}
+.modal-overlay.show{display:flex}
+.modal{background:var(--white);border-radius:var(--r2) var(--r2) 0 0;width:100%;max-width:480px;max-height:90vh;overflow-y:auto;padding:20px 20px max(20px,env(safe-area-inset-bottom));animation:slideUp .3s ease;-webkit-overflow-scrolling:touch}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.modal-hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.modal-hd h2{font-size:18px;font-weight:700}.modal-close{background:none;border:none;font-size:24px;color:var(--t3);cursor:pointer;padding:4px}
+/* Detail rows */
+.detail-row{display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid #f5f5f5}
+.detail-row .label{font-size:14px;color:var(--t3);flex-shrink:0}.detail-row .value{font-size:14px;font-weight:600;text-align:right;max-width:65%;word-break:break-all}
+.detail-actions{display:flex;gap:12px;padding:16px 0 0}
+/* Photo upload */
+.photo-upload{display:flex;gap:10px;flex-wrap:wrap}
+.photo-upload .photo-item{width:80px;height:80px;border-radius:12px;overflow:hidden;position:relative;flex-shrink:0}
+.photo-upload .photo-item img{width:100%;height:100%;object-fit:cover}
+.photo-upload .photo-item .photo-del{position:absolute;top:2px;right:2px;width:22px;height:22px;border-radius:50%;background:rgba(0,0,0,.6);color:#fff;border:none;font-size:14px;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.photo-add-btn{width:80px;height:80px;border-radius:12px;border:2px dashed #ddd;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;color:var(--t3);font-size:12px;gap:4px;flex-shrink:0}
+.photo-add-btn .plus{font-size:24px;line-height:1}
+/* Avatar upload */
+.avatar-upload{position:relative;width:100px;height:100px;margin:0 auto 12px;cursor:pointer}
+.avatar-upload img,.avatar-upload .avatar-placeholder{width:100px;height:100px;border-radius:50%;border:4px solid var(--c1l);object-fit:cover;display:block}
+.avatar-placeholder{background:var(--c1l);display:flex;align-items:center;justify-content:center;font-size:48px}
+.avatar-upload .avatar-edit{position:absolute;bottom:0;right:0;width:32px;height:32px;border-radius:50%;background:var(--c1);color:#fff;border:2px solid #fff;display:flex;align-items:center;justify-content:center;font-size:16px}
+.avatar-upload input{display:none}
+/* Profile */
+.profile-name{text-align:center;font-size:22px;font-weight:700;margin-bottom:4px}
+.profile-breed{text-align:center;font-size:14px;color:var(--t3);margin-bottom:16px}
+.profile-badges{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.badge{padding:6px 14px;border-radius:20px;font-size:12px;font-weight:700}
+.badge-blue{background:#E3F2FD;color:#1976D2}.badge-orange{background:#FFF3E0;color:#F57C00}.badge-green{background:#E8F5E9;color:#388E3C}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.info-cell{background:var(--bg);padding:12px;border-radius:var(--r)}
+.info-cell .label{font-size:11px;color:var(--t3);margin-bottom:4px}.info-cell .value{font-size:14px;font-weight:700}
+/* Daily card */
+.daily-card{background:var(--white);border-radius:var(--r);padding:14px;margin:8px 16px;box-shadow:0 2px 8px rgba(0,0,0,.04);cursor:pointer}
+.daily-top{display:flex;gap:12px;align-items:flex-start}
+.daily-card .d-icon{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.daily-card .d-body{flex:1;min-width:0}.daily-card .d-body h4{font-size:14px;font-weight:600;margin-bottom:2px}
+.daily-card .d-body p{font-size:13px;color:var(--t2);line-height:1.5}
+.daily-card .d-time{font-size:11px;color:var(--t3);white-space:nowrap;margin-top:2px}
+.daily-imgs{display:flex;gap:6px;margin-top:10px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.daily-imgs img{width:72px;height:72px;border-radius:10px;object-fit:cover;flex-shrink:0}
+/* Appt */
+.appt-card{background:var(--bg);border-radius:var(--r);padding:14px;margin-bottom:10px;border-left:4px solid var(--c1);cursor:pointer}
+.appt-card h4{font-size:15px;font-weight:700;margin-bottom:6px}.appt-card p{font-size:13px;color:var(--t2);margin-bottom:4px}
+.appt-status{display:inline-block;padding:4px 12px;border-radius:12px;font-size:12px;font-weight:700}
+.status-pending{background:#FFF3E0;color:#F57C00}.status-confirmed{background:#E8F5E9;color:#388E3C}.status-done{background:#E0E0E0;color:#666}
+/* Image viewer */
+.img-viewer{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.9);z-index:300;display:none;align-items:center;justify-content:center}
+.img-viewer.show{display:flex}.img-viewer img{max-width:95%;max-height:90vh;object-fit:contain;border-radius:8px}
+.img-viewer .close-btn{position:absolute;top:max(16px,env(safe-area-inset-top));right:16px;color:#fff;font-size:32px;background:none;border:none;cursor:pointer;z-index:1}
+/* Bottom nav */
+.bnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:var(--white);border-top:1px solid #f0f0f0;display:flex;justify-content:space-around;padding:8px 0 max(8px,env(safe-area-inset-bottom));z-index:100}
+[data-theme=dark] .bnav,[data-theme=auto].is-dark .bnav{border-top-color:#2A2A4A}
+[data-theme=dark] .card,[data-theme=auto].is-dark .card{box-shadow:0 2px 12px rgba(0,0,0,.2)}
+[data-theme=dark] .form-input,[data-theme=auto].is-dark .form-input{border-color:#333;background:#1A1A2E;color:#E0E0E0}
+[data-theme=dark] .btn-outline,[data-theme=auto].is-dark .btn-outline{border-color:#444;color:#aaa}
+[data-theme=dark] .tab,[data-theme=auto].is-dark .tab{background:#1A1A2E}
+[data-theme=dark] .rec,[data-theme=auto].is-dark .rec{border-bottom-color:#2A2A4A}
+[data-theme=dark] .daily-card,[data-theme=auto].is-dark .daily-card{box-shadow:0 2px 8px rgba(0,0,0,.15)}
+[data-theme=dark] .app,[data-theme=auto].is-dark .app{box-shadow:none}
+[data-theme=dark] .appt-card,[data-theme=auto].is-dark .appt-card{background:#1A1A2E}
+[data-theme=dark] .info-cell,[data-theme=auto].is-dark .info-cell{background:#1A1A2E}
+[data-theme=dark] .remind,[data-theme=auto].is-dark .remind{background:#1A1A2E}
+[data-theme=dark] .act-btn,[data-theme=auto].is-dark .act-btn{background:#16213E;box-shadow:0 2px 12px rgba(0,0,0,.15)}
+/* Theme picker */
+.theme-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.theme-section{padding:4px 0}
+.theme-section-title{font-size:13px;font-weight:700;color:var(--t3);margin:12px 0 8px;padding-top:8px;border-top:1px solid #f0f0f0}
+.theme-section-title:first-child{border-top:none;margin-top:0;padding-top:0}
+.theme-card{padding:14px 8px;border-radius:var(--r);border:2.5px solid transparent;text-align:center;cursor:pointer;transition:all .2s}
+.theme-card.active{border-color:var(--c1);transform:scale(1.03)}
+.theme-card .tc-dot{width:32px;height:32px;border-radius:50%;margin:0 auto 8px}
+.theme-card .tc-name{font-size:12px;font-weight:700}
+/* Welcome */
+.welcome{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:70vh;padding:40px 20px;text-align:center}
+.welcome .w-icon{font-size:80px;margin-bottom:20px;animation:bounce 2s infinite}
+.welcome h2{font-size:24px;font-weight:800;margin-bottom:8px;color:var(--c1)}
+.welcome p{font-size:15px;color:var(--t2);line-height:1.6;margin-bottom:24px}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+.bnav-item{display:flex;flex-direction:column;align-items:center;gap:3px;background:none;border:none;padding:4px 12px;cursor:pointer;color:var(--t3);font-family:inherit;transition:color .2s;-webkit-tap-highlight-color:transparent}
+.bnav-item.active{color:var(--c1)}.bnav-item .ico{font-size:22px}.bnav-item .txt{font-size:11px;font-weight:600}
+/* Install banner */
+.install-banner{background:linear-gradient(135deg,var(--c1),var(--c1d));color:#fff;padding:14px 20px;margin:12px 16px;border-radius:var(--r);display:none;align-items:center;gap:12px;cursor:pointer}
+.install-banner.show{display:flex}
+.install-banner .ib-text{flex:1;font-size:14px;font-weight:600}
+.install-banner .ib-btn{padding:8px 18px;background:#fff;color:var(--c1);border:none;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer}
+.install-banner .ib-close{background:none;border:none;color:rgba(255,255,255,.7);font-size:20px;cursor:pointer}
+/* Toast */
+.toast{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.8);background:rgba(0,0,0,.75);color:#fff;padding:14px 28px;border-radius:var(--r);font-size:14px;font-weight:600;z-index:999;opacity:0;transition:all .2s;pointer-events:none}
+.toast.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
+.empty{text-align:center;padding:40px 20px;color:var(--t3)}
+.empty .ico{font-size:48px;margin-bottom:12px}.empty p{font-size:14px;margin-bottom:16px}
+.mt12{margin-top:12px}.px16{padding:0 16px}.pt16{padding-top:16px}
+::-webkit-scrollbar{width:0;height:0}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+
+<!-- PAGE: HOME -->
+<div class="page active" id="pg-home">
+  <header class="hd">
+    <div class="hd-row"><h1>🐾 萌宠管家</h1><button class="hd-btn" onclick="openThemeModal()">🎨</button></div>
+    <div class="pet-bar" id="homePetBar"></div>
+  </header>
+  <div style="padding-top:12px">
+    <div class="install-banner" id="installBanner" onclick="installApp()">
+      <div class="ib-text">📲 安装萌宠管家到桌面，随时使用</div>
+      <button class="ib-btn">安装</button>
+      <button class="ib-close" onclick="event.stopPropagation();document.getElementById('installBanner').classList.remove('show')">✕</button>
+    </div>
+    <div class="actions">
+      <button class="act-btn" onclick="openAddRecord('vaccine')"><div class="act-icon" style="background:#FFE5E5">💉</div><span class="act-text">疫苗</span></button>
+      <button class="act-btn" onclick="openAddRecord('deworming')"><div class="act-icon" style="background:#E5F3FF">🐛</div><span class="act-text">驱虫</span></button>
+      <button class="act-btn" onclick="openAddRecord('checkup')"><div class="act-icon" style="background:#FFF9E5">🏥</div><span class="act-text">体检</span></button>
+      <button class="act-btn" onclick="openAddRecord('feeding')"><div class="act-icon" style="background:#E8F5E9">🍖</div><span class="act-text">喂食</span></button>
+    </div>
+    <div class="card"><div class="card-title">⏰ 即将到期 <span class="more" onclick="nav('health')">查看全部</span></div><div id="homeReminders"></div></div>
+    <div class="card"><div class="card-title">📋 最近记录 <span class="more" onclick="nav('health')">全部</span></div><div id="homeRecent"></div></div>
+    <div class="card"><div class="card-title">📅 今日日常 <span class="more" onclick="nav('daily')">全部</span></div><div id="homeDaily"></div></div>
+  </div>
+</div>
+
+<!-- PAGE: HEALTH -->
+<div class="page" id="pg-health">
+  <header class="hd"><div class="hd-row"><h1>🏥 健康档案</h1><button class="hd-btn" onclick="openAddRecord()">＋</button></div></header>
+  <div class="tabs mt12" id="healthTabs">
+    <button class="tab active" onclick="filterHealth('all',this)">全部</button>
+    <button class="tab" onclick="filterHealth('vaccine',this)">💉 疫苗</button>
+    <button class="tab" onclick="filterHealth('deworming',this)">🐛 驱虫</button>
+    <button class="tab" onclick="filterHealth('checkup',this)">🏥 体检</button>
+    <button class="tab" onclick="filterHealth('neutering',this)">✂️ 绝育</button>
+  </div>
+  <div id="healthStats" class="px16"></div>
+  <div id="healthList" class="px16"></div>
+</div>
+
+<!-- PAGE: DAILY -->
+<div class="page" id="pg-daily">
+  <header class="hd">
+    <div class="hd-row"><h1>📖 日常记录</h1><button class="hd-btn" onclick="openAddDaily()">＋</button></div>
+  </header>
+  <div class="tabs mt12">
+    <button class="tab active" onclick="filterDaily('all',this)">全部</button>
+    <button class="tab" onclick="filterDaily('feeding',this)">🍖 喂食</button>
+    <button class="tab" onclick="filterDaily('walking',this)">🦮 遛狗</button>
+    <button class="tab" onclick="filterDaily('weight',this)">⚖️ 体重</button>
+    <button class="tab" onclick="filterDaily('diary',this)">📔 日记</button>
+  </div>
+  <div id="dailyList"></div>
+</div>
+
+<!-- PAGE: APPT -->
+<div class="page" id="pg-appt">
+  <header class="hd">
+    <div class="hd-row"><h1>📞 预约与咨询</h1><button class="hd-btn" onclick="openAddAppt()">＋</button></div>
+  </header>
+  <div class="tabs mt12">
+    <button class="tab active" onclick="filterAppt('all',this)">全部</button>
+    <button class="tab" onclick="filterAppt('pending',this)">待就诊</button>
+    <button class="tab" onclick="filterAppt('done',this)">已完成</button>
+  </div>
+  <div class="card">
+    <div class="card-title">💡 快速咨询</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <button class="btn btn-outline btn-sm" onclick="showConsult('急诊指南')">🚨 急诊指南</button>
+      <button class="btn btn-outline btn-sm" onclick="showConsult('用药咨询')">💊 用药咨询</button>
+      <button class="btn btn-outline btn-sm" onclick="showConsult('饮食建议')">🥗 饮食建议</button>
+      <button class="btn btn-outline btn-sm" onclick="showConsult('行为异常')">🐾 行为异常</button>
+    </div>
+  </div>
+  <div id="apptList" class="px16"></div>
+</div>
+
+<!-- PAGE: PROFILE -->
+<div class="page" id="pg-profile">
+  <header class="hd"><div class="hd-row"><h1>🐾 宠物档案</h1><button class="hd-btn" onclick="openEditPet()">✏️</button></div></header>
+  <div id="profileContent" class="pt16"></div>
+</div>
+
+<!-- BOTTOM NAV -->
+<nav class="bnav">
+  <button class="bnav-item active" data-p="home" onclick="nav('home')"><span class="ico">🏠</span><span class="txt">首页</span></button>
+  <button class="bnav-item" data-p="health" onclick="nav('health')"><span class="ico">💊</span><span class="txt">健康</span></button>
+  <button class="bnav-item" data-p="daily" onclick="nav('daily')"><span class="ico">📖</span><span class="txt">日常</span></button>
+  <button class="bnav-item" data-p="appt" onclick="nav('appt')"><span class="ico">📞</span><span class="txt">预约</span></button>
+  <button class="bnav-item" data-p="profile" onclick="nav('profile')"><span class="ico">🐾</span><span class="txt">档案</span></button>
+</nav>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal"><div class="modal" id="modalBody"></div></div>
+<!-- IMAGE VIEWER -->
+<div class="img-viewer" id="imgViewer" onclick="this.classList.remove('show')"><button class="close-btn">✕</button><img id="imgViewerSrc"></div>
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+</div>
+
+<script>
+// ===== DATA =====
+const DB='petApp_v4';
+function loadDB(){try{return JSON.parse(localStorage.getItem(DB))||defDB()}catch(e){return defDB()}}
+function saveDB(d){try{localStorage.setItem(DB,JSON.stringify(d))}catch(e){showToast('存储空间不足，请清理旧图片');throw e}}
+function defDB(){return{pets:[],healthRecords:[],dailyLogs:[],appointments:[],activePetIdx:0,theme:'coral'}}
+function gid(){return Date.now().toString(36)+Math.random().toString(36).substr(2,5)}
+let db=loadDB();
+function curPet(){return db.pets[db.activePetIdx]||db.pets[0]}
+
+// ===== IMAGE UTILS =====
+function compressImage(file,maxW,quality){
+  return new Promise((resolve)=>{
+    const reader=new FileReader();
+    reader.onload=function(e){
+      const img=new Image();
+      img.onload=function(){
+        const canvas=document.createElement('canvas');
+        let w=img.width,h=img.height;
+        if(w>maxW){h=h*(maxW/w);w=maxW}
+        canvas.width=w;canvas.height=h;
+        const ctx=canvas.getContext('2d');
+        ctx.drawImage(img,0,0,w,h);
+        resolve(canvas.toDataURL('image/jpeg',quality||0.7));
+      };
+      img.src=e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+function handlePhotoInput(inputEl,containerId,maxPhotos){
+  const files=Array.from(inputEl.files);
+  const container=document.getElementById(containerId);
+  const existing=container.querySelectorAll('.photo-item').length;
+  const toAdd=Math.min(files.length,maxPhotos-existing);
+  for(let i=0;i<toAdd;i++){
+    compressImage(files[i],800,0.7).then(data=>{
+      const div=document.createElement('div');div.className='photo-item';
+      div.innerHTML=`<img src="${data}"><button class="photo-del" onclick="this.parentElement.remove()">✕</button>`;
+      div.dataset.src=data;
+      container.insertBefore(div,container.querySelector('.photo-add-btn'));
+    });
+  }
+  inputEl.value='';
+}
+function getPhotosFromContainer(containerId){
+  return Array.from(document.getElementById(containerId).querySelectorAll('.photo-item')).map(el=>el.dataset.src);
+}
+let _imgCache=[];
+function viewImg(idx){document.getElementById('imgViewerSrc').src=_imgCache[idx]||'';document.getElementById('imgViewer').classList.add('show')}
+function imgTag(src,style,extra){const idx=_imgCache.length;_imgCache.push(src);return `<img src="${src}" style="${style||''}" data-imgidx="${idx}" ${extra||''}>`}
+document.addEventListener('click',function(e){const t=e.target;if(t.tagName==='IMG'&&t.dataset.imgidx!==undefined){e.stopPropagation();viewImg(parseInt(t.dataset.imgidx))}})
+
+// ===== NAV =====
+function nav(p){
+  document.querySelectorAll('.page').forEach(e=>e.classList.remove('active'));
+  document.getElementById('pg-'+p).classList.add('active');
+  document.querySelectorAll('.bnav-item').forEach(e=>e.classList.toggle('active',e.dataset.p===p));
+  window.scrollTo({top:0});
+  ({home:renderHome,health:renderHealth,daily:renderDaily,appt:renderAppt,profile:renderProfile})[p]?.();
+}
+
+// ===== TOAST =====
+let _tt;function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(_tt);_tt=setTimeout(()=>t.classList.remove('show'),1500)}
+
+// ===== MODAL =====
+function openModal(html){document.getElementById('modalBody').innerHTML=html;document.getElementById('modal').classList.add('show')}
+function closeModal(){document.getElementById('modal').classList.remove('show')}
+document.getElementById('modal').addEventListener('click',function(e){if(e.target===this)closeModal()});
+
+// ===== DATE =====
+function fmtD(d){if(!d)return'-';const dt=new Date(d);return dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0')+'-'+String(dt.getDate()).padStart(2,'0')}
+function daysTo(d){if(!d)return null;const n=new Date();n.setHours(0,0,0,0);const t=new Date(d);t.setHours(0,0,0,0);return Math.ceil((t-n)/(864e5))}
+function today(){return new Date().toISOString().split('T')[0]}
+function nowT(){return new Date().toTimeString().slice(0,5)}
+function petAge(b){if(!b)return'-';const bd=new Date(b),n=new Date();let y=n.getFullYear()-bd.getFullYear(),m=n.getMonth()-bd.getMonth();if(m<0){y--;m+=12}return y>0?y+'岁'+m+'个月':m+'个月'}
+
+// ===== TYPE CONFIG =====
+const HT={vaccine:{i:'💉',l:'疫苗接种',c:'#E3F2FD'},deworming:{i:'🐛',l:'驱虫',c:'#F3E5F5'},checkup:{i:'🏥',l:'体检',c:'#E8F5E9'},neutering:{i:'✂️',l:'绝育',c:'#FFF3E0'}};
+const DT={feeding:{i:'🍖',l:'喂食',c:'#FFE5E5'},walking:{i:'🦮',l:'遛狗',c:'#E5F3FF'},weight:{i:'⚖️',l:'体重',c:'#FFF9E5'},diary:{i:'📔',l:'日记',c:'#F3E5F5'}};
+
+// ===== PET AVATAR =====
+function petAvatarHTML(p,size){
+  size=size||40;
+  if(p.avatarData)return `<img src="${p.avatarData}" style="width:${size}px;height:${size}px;border-radius:50%;object-fit:cover">`;
+  return `<span style="font-size:${size*0.6}px">${p.avatar||'🐾'}</span>`;
+}
+
+// ===== HOME =====
+function renderHome(){
+  const pid=curPet()?.id;
+  let ph='';db.pets.forEach((p,i)=>{
+    ph+=`<div class="pet-chip ${i===db.activePetIdx?'active':''}" onclick="switchPet(${i})"><div class="chip-avatar">${petAvatarHTML(p,32)}</div><span>${p.name}</span></div>`;
+  });
+  ph+=`<button class="pet-chip-add" onclick="openAddPet()">+</button>`;
+  document.getElementById('homePetBar').innerHTML=ph;
+  if(!pid){
+    document.getElementById('homeReminders').innerHTML='';
+    document.getElementById('homeRecent').innerHTML='';
+    document.getElementById('homeDaily').innerHTML=`<div class="welcome"><div class="w-icon">🐾</div><h2>欢迎使用萌宠管家</h2><p>还没有添加宠物哦<br>点击下方按钮，开始记录你的毛孩子吧！</p><button class="btn btn-primary" onclick="openAddPet()" style="padding:14px 40px;font-size:16px">🐶 添加我的宠物</button></div>`;
+    return;
+  }
+
+  // Reminders
+  const recs=db.healthRecords.filter(r=>r.petId===pid&&r.nextDate).sort((a,b)=>new Date(a.nextDate)-new Date(b.nextDate));
+  let rh='';recs.slice(0,3).forEach(r=>{
+    const d=daysTo(r.nextDate),t=HT[r.type]||{i:'📋',l:r.type,c:'#eee'};if(d===null)return;
+    const s=d<=3?'background:#FFEBEE;color:#C62828':d<=7?'background:#FFF3E0;color:#F57C00':'background:#E8F5E9;color:#388E3C';
+    rh+=`<div class="remind" onclick="viewRecord('${r.id}')"><div class="remind-icon" style="background:${t.c}">${t.i}</div><div class="remind-info"><h4>${t.l}</h4><p>${r.details||''} · ${fmtD(r.nextDate)}</p></div><span class="remind-days" style="${s}">${d<=0?'已到期':d+'天后'}</span></div>`;
+  });
+  document.getElementById('homeReminders').innerHTML=rh||'<div class="empty"><div class="ico">✨</div><p>暂无即将到期的提醒</p></div>';
+
+  // Recent
+  const recent=db.healthRecords.filter(r=>r.petId===pid).sort((a,b)=>new Date(b.date)-new Date(a.date)).slice(0,3);
+  let rl='';recent.forEach(r=>{const t=HT[r.type]||{i:'📋',l:r.type,c:'#eee'};
+    rl+=`<div class="rec" onclick="viewRecord('${r.id}')"><div class="rec-icon" style="background:${t.c}">${t.i}</div><div class="rec-info"><h4>${t.l}</h4><p>${r.details||r.hospital||''}</p>${r.photos?.length?`<div class="rec-imgs">${r.photos.slice(0,3).map(s=>imgTag(s,'width:48px;height:48px;border-radius:8px;object-fit:cover;cursor:pointer')).join('')}</div>`:''}</div><div class="rec-date">${fmtD(r.date)}</div></div>`;
+  });
+  document.getElementById('homeRecent').innerHTML=rl||'<div class="empty"><div class="ico">📝</div><p>暂无记录，点击上方快速添加</p></div>';
+
+  // Today
+  const todayLogs=db.dailyLogs.filter(r=>r.petId===pid&&r.date===today()).sort((a,b)=>(b.time||'').localeCompare(a.time||''));
+  let dl='';todayLogs.slice(0,3).forEach(r=>{const t=DT[r.type]||{i:'📋',l:r.type,c:'#eee'};
+    dl+=`<div class="rec" onclick="viewDaily('${r.id}')"><div class="rec-icon" style="background:${t.c}">${t.i}</div><div class="rec-info"><h4>${t.l}</h4><p>${r.details||''}</p></div><div class="rec-date">${r.time||''}</div></div>`;
+  });
+  document.getElementById('homeDaily').innerHTML=dl||'<div class="empty"><div class="ico">🌟</div><p>今天还没有记录哦</p></div>';
+}
+function switchPet(i){db.activePetIdx=i;saveDB(db);renderHome()}
+
+// ===== HEALTH =====
+let _hF='all';
+function filterHealth(t,el){_hF=t;document.querySelectorAll('#healthTabs .tab').forEach(e=>e.classList.remove('active'));el.classList.add('active');renderHealth()}
+function renderHealth(){
+  const pid=curPet()?.id;if(!pid)return;
+  let recs=db.healthRecords.filter(r=>r.petId===pid);if(_hF!=='all')recs=recs.filter(r=>r.type===_hF);
+  recs.sort((a,b)=>new Date(b.date)-new Date(a.date));
+  const all=db.healthRecords.filter(r=>r.petId===pid);
+  document.getElementById('healthStats').innerHTML=`<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px">${[['vaccine','💉','疫苗'],['deworming','🐛','驱虫'],['checkup','🏥','体检'],['neutering','✂️','绝育']].map(([k,ic,lb])=>`<div style="background:${HT[k].c};padding:12px 8px;border-radius:var(--r);text-align:center"><div style="font-size:20px;font-weight:800">${all.filter(r=>r.type===k).length}</div><div style="font-size:11px;color:var(--t3)">${ic} ${lb}</div></div>`).join('')}</div>`;
+
+  let h='';recs.forEach(r=>{const t=HT[r.type]||{i:'📋',l:r.type,c:'#eee'};
+    h+=`<div class="rec" onclick="viewRecord('${r.id}')"><div class="rec-icon" style="background:${t.c}">${t.i}</div><div class="rec-info"><h4>${t.l}</h4><p>${r.details||''} ${r.hospital?'· '+r.hospital:''}</p>${r.photos?.length?`<div class="rec-imgs">${r.photos.slice(0,3).map(s=>imgTag(s,'width:48px;height:48px;border-radius:8px;object-fit:cover;cursor:pointer')).join('')}</div>`:''}</div><div class="rec-date">${fmtD(r.date)}</div></div>`;
+  });
+  document.getElementById('healthList').innerHTML=h||'<div class="empty"><div class="ico">📋</div><p>暂无记录</p><button class="btn btn-primary btn-sm" onclick="openAddRecord()">添加记录</button></div>';
+}
+
+function openAddRecord(type){
+  const p=curPet();if(!p){showToast('请先添加宠物');return}
+  openModal(`<div class="modal-hd"><h2>添加健康记录</h2><button class="modal-close" onclick="closeModal()">✕</button></div>
+  <form onsubmit="saveRecord(event)">
+    <div class="form-group"><label class="form-label">类型</label><select class="form-input" id="rec_type">
+      <option value="vaccine" ${type==='vaccine'?'selected':''}>💉 疫苗接种</option>
+      <option value="deworming" ${type==='deworming'?'selected':''}>🐛 驱虫</option>
+      <option value="checkup" ${type==='checkup'?'selected':''}>🏥 体检</option>
+      <option value="neutering" ${type==='neutering'?'selected':''}>✂️ 绝育</option>
+    </select></div>
+    <div class="form-group"><label class="form-label">日期</label><input type="date" class="form-input" id="rec_date" value="${today()}" required></div>
+    <div class="form-group"><label class="form-label">详情</label><input type="text" class="form-input" id="rec_details" placeholder="如：狂犬疫苗第1针"></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">医院</label><input type="text" class="form-input" id="rec_hospital" placeholder="医院名称"></div>
+      <div class="form-group"><label class="form-label">医生</label><input type="text" class="form-input" id="rec_doctor" placeholder="医生姓名"></div>
+    </div>
+    <div class="form-group"><label class="form-label">下次日期（提醒）</label><input type="date" class="form-input" id="rec_next"></div>
+    <div class="form-group"><label class="form-label">📷 上传图片（可选）</label>
+      <div class="photo-upload" id="recPhotos">
+        <label class="photo-add-btn"><span class="plus">+</span>拍照/相册<input type="file" accept="image/*" multiple capture="environment" style="display:none" onchange="handlePhotoInput(this,'recPhotos',4)"></label>
+      </div>
+    </div>
+    <div class="form-group"><label class="form-label">备注</label><textarea class="form-input" id="rec_notes" rows="2" placeholder="其他备注"></textarea></div>
+    <button type="submit" class="btn btn-primary btn-block">保存记录</button>
+  </form>`);
+}
+function saveRecord(e){
+  e.preventDefault();
+  const r={id:gid(),petId:curPet().id,type:$v('rec_type'),date:$v('rec_date'),details:$v('rec_details'),hospital:$v('rec_hospital'),doctor:$v('rec_doctor'),nextDate:$v('rec_next'),notes:$v('rec_notes'),photos:getPhotosFromContainer('recPhotos')};
+  db.healthRecords.push(r);saveDB(db);closeModal();showToast('记录已保存');renderHome();renderHealth();
+}
+function viewRecord(id){
+  const r=db.healthRecords.find(x=>x.id===id);if(!r)return;const t=HT[r.type]||{i:'📋',l:r.type};const du=daysTo(r.nextDate);
+  let ph='';if(r.photos?.length)ph=`<div style="margin-top:12px"><div style="font-size:13px;color:var(--t3);margin-bottom:8px">📷 附件图片</div><div style="display:flex;gap:8px;flex-wrap:wrap">${r.photos.map(s=>imgTag(s,'width:80px;height:80px;border-radius:12px;object-fit:cover;cursor:pointer')).join('')}</div></div>`;
+  openModal(`<div class="modal-hd"><h2>${t.i} ${t.l}</h2><button class="modal-close" onclick="closeModal()">✕</button></div>
+  <div class="detail-row"><span class="label">日期</span><span class="value">${fmtD(r.date)}</span></div>
+  <div class="detail-row"><span class="label">详情</span><span class="value">${r.details||'-'}</span></div>
+  <div class="detail-row"><span class="label">医院</span><span class="value">${r.hospital||'-'}</span></div>
+  <div class="detail-row"><span class="label">医生</span><span class="value">${r.doctor||'-'}</span></div>
+  <div class="detail-row"><span class="label">下次日期</span><span class="value">${r.nextDate?fmtD(r.nextDate)+(du!==null?' ('+(du<=0?'已到期':du+'天后')+')':''):'-'}</span></div>
+  <div class="detail-row"><span class="label">备注</span><span class="value">${r.notes||'-'}</span></div>${ph}
+  <div class="detail-actions"><button class="btn btn-outline" style="flex:1" onclick="editRecord('${r.id}')">编辑</button><button class="btn btn-danger" style="flex:1" onclick="delRecord('${r.id}')">删除</button></div>`);
+}
+function editRecord(id){
+  const r=db.healthRecords.find(x=>x.id===id);if(!r)return;
+  let existPhotos='';if(r.photos?.length)existPhotos=r.photos.map(s=>`<div class="photo-item" data-src="${s}"><img src="${s}"><button class="photo-del" onclick="this.parentElement.remove()">✕</button></div>`).join('');
+  openModal(`<div class="modal-hd"><h2>编辑记录</h2><button class="modal-close" onclick="closeModal()">✕</button></div>
+  <form onsubmit="updateRecord(event,'${id}')">
+    <div class="form-group"><label class="form-label">类型</label><select class="form-input" id="rec_type">${['vaccine','deworming','checkup','neutering'].map(k=>`<option value="${k}" ${r.type===k?'selected':''}>${HT[k].i} ${HT[k].l}</option>`).join('')}</select></div>
+    <div class="form-group"><label class="form-label">日期</label><input type="date" class="form-input" id="rec_date" value="${r.date}" required></div>
+    <div class="form-group"><label class="form-label">详情</label><input type="text" class="form-input" id="rec_details" value="${r.details||''}"></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">医院</label><input type="text" class="form-input" id="rec_hospital" value="${r.hospital||''}"></div><div class="form-group"><label class="form-label">医生</label><input type="text" class="form-input" id="rec_doctor" value="${r.doctor||''}"></div></div>
+    <div class="form-group"><label class="form-label">下次日期</label><input type="date" class="form-input" id="rec_next" value="${r.nextDate||''}"></div>
+    <div class="form-group"><label class="form-label">📷 图片</label><div class="photo-upload" id="recPhotos">${existPhotos}<label class="photo-add-btn"><span class="plus">+</span>添加<input type="file" accept="image/*" multiple capture="environment" style="display:none" onchange="handlePhotoInput(this,'recPhotos',4)"></label></div></div>
+    <div class="form-group"><label class="form-label">备注</label><textarea class="form-input" id="rec_notes" rows="2">${r.notes||''}</textarea></div>
+    <button type="submit" class="btn btn-primary btn-block">保存修改</button>
+  </form>`);
+}
+function updateRecord(e,id){
+  e.preventDefault();const i=db.healthRecords.findIndex(x=>x.id===id);if(i<0)return;
+  db.healthRecords[i]={...db.healthRecords[i],type:$v('rec_type'),date:$v('rec_date'),details:$v('rec_details'),hospital:$v('rec_hospital'),doctor:$v('rec_doctor'),nextDate:$v('rec_next'),notes:$v('rec_notes'),photos:getPhotosFromContainer('recPhotos')};
+  saveDB(db);closeModal();showToast('已更新');renderHome();renderHealth();
+}
+function delRecord(id){if(!confirm('确定删除此记录？'))return;db.healthRecords=db.healthRecords.filter(x=>x.id!==id);saveDB(db);closeModal();showToast('已删除');renderHome();renderHealth()}
+
+// ===== DAILY =====
+let _dF='all';
+function filterDaily(t,el){_dF=t;document.querySelectorAll('#pg-daily .tab').forEach(e=>e.classList.remove('active'));el.classList.add('active');renderDaily()}
+function renderDaily(){
+  const pid=curPet()?.id;if(!pid)return;
+  let logs=db.dailyLogs.filter(r=>r.petId===pid);if(_dF!=='all')logs=logs.filter(r=>r.type===_dF);
+  logs.sort((a,b)=>{const dc=b.date.localeCompare(a.date);return dc!==0?dc:(b.time||'').localeCompare(a.time||'')});
+  let h='',lastD='';
+  logs.forEach(r=>{
+    if(r.date!==lastD){lastD=r.date;h+=`<div style="padding:10px 16px 4px;font-size:13px;font-weight:700;color:var(--t3)">${r.date===today()?'今天':fmtD(r.date)}</div>`}
+    const t=DT[r.type]||{i:'📋',l:r.type,c:'#eee'};
+    h+=`<div class="daily-card" onclick="viewDaily('${r.id}')"><div class="daily-top"><div class="d-icon" style="background:${t.c}">${t.i}</div><div class="d-body"><h4>${t.l} ${r.mood||''}</h4><p>${r.details||''}</p></div><div class="d-time">${r.time||''}</div></div>${r.photos?.length?`<div class="daily-imgs">${r.photos.map(s=>imgTag(s,'width:72px;height:72px;border-radius:10px;object-fit:cover;cursor:pointer')).join('')}</div>`:''}</div>`;
+  });
+  document.getElementById('dailyList').innerHTML=h||'<div class="empty" style="margin-top:40px"><div class="ico">📖</div><p>暂无记录</p><button class="btn btn-primary btn-sm" onclick="openAddDaily()">添加日常</button></div>';
+}
+function openAddDaily(type){
+  const p=curPet();if(!p){showToast('请先添加宠物');return}
+  openModal(`<div class="modal-hd"><h2>添加日常</h2><button class="modal-close" onclick="closeModal()">✕</button></div>
+  <form onsubmit="saveDaily(event)">
+    <div class="form-group"><label class="form-label">类型</label><select class="form-input" id="d_type">
+      <option value="feeding" ${type==='feeding'?'selected':''}>🍖 喂食</option>
+      <option value="walking" ${type==='walking'?'selected':''}>🦮 遛狗</option>
+      <option value="weight" ${type==='weight'?'selected':''}>⚖️ 体重</option>
+      <option value="diary" ${type==='diary'?'selected':''}>📔 日记</option>
+    </select></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">日期</label><input type="date" class="form-input" id="d_date" value="${today()}" required></div>
+      <div class="form-group"><label class="form-label">时间</label><input type="time" class="form-input" id="d_time" value="${nowT()}"></div>
+    </div>
+    <div class="form-group"><label class="form-label">内容</label><textarea class="form-input" id="d_details" rows="3" placeholder="记录详情..."></textarea></div>
+    <div class="form-group"><label class="form-label">心情</label>
+      <div style="display:flex;gap:12px" id="d_mood_bar">
+        ${['😄','😊','🥰','😴','😢','😡'].map(m=>`<span class="mood-opt" onclick="pickMood(this,'${m}')" style="font-size:28px;cursor:pointer;opacity:.4;transition:all .2s">${m}</span>`).join('')}
+      </div><input type="hidden" id="d_mood">
+    </div>
+    <div class="form-group"><label class="form-label">📷 上传图片（可选）</label>
+      <div class="photo-upload" id="dailyPhotos">
+        <label class="photo-add-btn"><span class="plus">+</span>拍照/相册<input type="file" accept="image/*" multiple capture="environment" style="display:none" onchange="handlePhotoInput(this,'dailyPhotos',6)"></label>
+      </div>
+    </div>
+    <button type="submit" class="btn btn-primary btn-block">保存</button>
+  </form>`);
+}
+function pickMood(el,v){document.querySelectorAll('.mood-opt').forEach(e=>e.style.opacity='.4');el.style.opacity='1';el.style.transform='scale(1.2)';document.getElementById('d_mood').value=v}
+function saveDaily(e){
+  e.preventDefault();
+  const r={id:gid(),petId:curPet().id,type:$v('d_type'),date:$v('d_date'),time:$v('d_time'),details:$v('d_details'),mood:$v('d_mood'),photos:getPhotosFromContainer('dailyPhotos')};
+  db.dailyLogs.push(r);saveDB(db);closeModal();showToast('已记录');renderHome();renderDaily();
+}
+function viewDaily(id){
+  const r=db.dailyLogs.find(x=>x.id===id);if(!r)return;const t=DT[r.type]||{i:'📋',l:r.type};
+  let ph='';if(r.photos?.length)ph=`<div style="margin-top:12px"><div style="font-size:13px;color:var(--t3);margin-bottom:8px">📷 图片</div><div style="display:flex;gap:8px;flex-wrap:wrap">${r.photos.map(s=>imgTag(s,'width:80px;height:80px;border-radius:12px;object-fit:cover;cursor:pointer')).join('')}</div></div>`;
+  openModal(`<div class="modal-hd"><h2>${t.i} ${t.l}</h2><button class="modal-close" onclick="closeModal()">✕</button></div>
+  <div class="detail-row"><span class="label">日期</span><span class="value">${fmtD(r.date)}</span></div>
+  <div class="detail-row"><span class="label">时间</span><span class="value">${r.time||'-'}</span></div>
+  <div class="detail-row"><span class="label">内容</span><span class="value">${r.details||'-'}</span></div>
+  <div class="detail-row"><span class="label">心情</span><span class="value" style="font-size:24px">${r.mood||'-'}</span></div>${ph}
+  <div class="detail-actions"><button class="btn btn-outline" style="flex:1" onclick="editDaily('${r.id}')">编辑</button><button class="btn btn-danger" style="flex:1" onclick="delDaily('${r.id}')">删除</button></div>`);
+}
+function editDaily(id){
+  const r=db.dailyLogs.find(x=>x.id===id);if(!r)return;
+  let ep='';if(r.photos?.length)ep=r.photos.map(s=>`<div class="photo-item" data-src="${s}"><img src="${s}"><button class="photo-del" onclick="this.parentElement.remove()">✕</button></div>`).join('');
+  openModal(`<div class="modal-hd"><h2>编辑记录</h2><button class="modal-close" onclick="closeModal()">✕</button></div>
+  <form onsubmit="updateDaily(event,'${id}')">
+    <div class="form-group"><label class="form-label">类型</label><select class="form-input" id="d_type">${['feeding','walking','weight','diary'].map(k=>`<option value="${k}" ${r.type===k?'selected':''}>${DT[k].i} ${DT[k].l}</option>`).join('')}</select></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">日期</label><input type="date" class="form-input" id="d_date" value="${r.date}" required></div><div class="form-group"><label class="form-label">时间</label><input type="time" class="form-input" id="d_time" value="${r.time||''}"></div></div>
+    <div class="form-group"><label class="form-label">内容</label><textarea class="form-input" id="d_details" rows="3">${r.details||''}</textarea></div>
+    <div class="form-group"><label class="form-label">📷 图片</label><div class="photo-upload" id="dailyPhotos">${ep}<label class="photo-add-btn"><span class="plus">+</span>添加<input type="file" accept="image/*" multiple capture="environment" style="display:none" onchange="handlePhotoInput(this,'dailyPhotos',6)"></label></div></div>
+    <button type="submit" class="btn btn-primary btn-block">保存修改</button>
+  </form>`);
+}
+function updateDaily(e,id){e.preventDefault();const i=db.dailyLogs.findIndex(x=>x.id===id);if(i<0)return;db.dailyLogs[i]={...db.dailyLogs[i],type:$v('d_type'),date:$v('d_date'),time:$v('d_time'),details:$v('d_details'),photos:getPhotosFromContainer('dailyPhotos')};saveDB(db);closeModal();showToast('已更新');renderHome();renderDaily()}
+function delDaily(id){if(!confirm('确定删除？'))return;db.dailyLogs=db.dailyLogs.filter(x=>x.id!==id);saveDB(db);closeModal();showToast('已删除');renderHome();renderDaily()}
+
+// ===== APPOINTMENTS =====
+let _aF='all';
+function filterAppt(t,el){_aF=t;document.querySelectorAll('#pg-appt .tab').forEach(e=>e.classList.remove('active'));el.classList.add('active');renderAppt()}
+function renderAppt(){
+  const pid=curPet()?.id;if(!pid)return;
+  let appts=db.appointments.filter(a=>a.petId===pid);if(_aF==='pending')appts=appts.filter(a=>a.status!=='done');else if(_aF==='done')appts=appts.filter(a=>a.status==='done');
+  appts.sort((a,b)=>new Date(b.date)-new Date(a.date));
+  let h='';appts.forEach(a=>{
+    const sc=a.status==='done'?'status-done':a.status==='confirmed'?'status-confirmed':'status-pending';
+    const sl=a.status==='done'?'已完成':a.status==='confirmed'?'已确认':'待就诊';
+    h+=`<div class="appt-card" onclick="viewAppt('${a.id}')"><h4>${a.reason||'就诊预约'}</h4><p>🏥 ${a.hospital||'-'} ${a.doctor?'· 医生: '+a.doctor:''}</p><p>📅 ${fmtD(a.date)} ${a.time||''}</p><span class="appt-status ${sc}">${sl}</span></div>`;
+  });
+  document.getElementById('apptList').innerHTML=h||'<div class="empty" style="margin-top:20px"><div class="ico">📞</div><p>暂无预约</p><button class="btn btn-primary btn-sm" onclick="openAddAppt()">新建预约</button></div>';
+}
+function openAddAppt(){
+  const p=curPet();if(!p){showToast('请先添加宠物');return}
+  openModal(`<div class="modal-hd"><h2>新建预约</h2><button class="modal-close" onclick="closeModal()">✕</button></div>
+  <form onsubmit="saveAppt(event)">
+    <div class="form-group"><label class="form-label">就诊原因</label><input type="text" class="form-input" id="a_reason" placeholder="如：年度体检" required></div>
+    <div class="form-group"><label class="form-label">医院</label><input type="text" class="form-input" id="a_hospital" placeholder="医院名称"></div>
+    <div class="form-group"><label class="form-label">医生</label><input type="text" class="form-input" id="a_doctor" placeholder="医生姓名"></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">日期</label><input type="date" class="form-input" id="a_date" required></div><div class="form-group"><label class="form-label">时间</label><input type="time" class="form-input" id="a_time"></div></div>
+    <div class="form-group"><label class="form-label">备注</label><textarea class="form-input" id="a_notes" rows="2"></textarea></div>
+    <button type="submit" class="btn btn-primary btn-block">保存预约</button>
+  </form>`);
+}
+function saveAppt(e){e.preventDefault();db.appointments.push({id:gid(),petId:curPet().id,reason:$v('a_reason'),hospital:$v('a_hospital'),doctor:$v('a_doctor'),date:$v('a_date'),time:$v('a_time'),notes:$v('a_notes'),status:'pending'});saveDB(db);closeModal();showToast('预约已创建');renderAppt()}
+function viewAppt(id){
+  const a=db.appointments.find(x=>x.id===id);if(!a)return;
+  const sc=a.status==='done'?'status-done':a.status==='confirmed'?'status-confirmed':'status-pending';
+  const sl=a.status==='done'?'已完成':a.status==='confirmed'?'已确认':'待就诊';
+  openModal(`<div class="modal-hd"><h2>预约详情</h2><button class="modal-close" onclick="closeModal()">✕</button></div>
+  <div class="detail-row"><span class="label">原因</span><span class="value">${a.reason||'-'}</span></div>
+  <div class="detail-row"><span class="label">医院</span><span class="value">${a.hospital||'-'}</span></div>
+  <div class="detail-row"><span class="label">医生</span><span class="value">${a.doctor||'-'}</span></div>
+  <div class="detail-row"><span class="label">日期</span><span class="value">${fmtD(a.date)} ${a.time||''}</span></div>
+  <div class="detail-row"><span class="label">状态</span><span class="value"><span class="appt-status ${sc}">${sl}</span></span></div>
+  <div class="detail-row"><span class="label">备注</span><span class="value">${a.notes||'-'}</span></div>
+  <div class="detail-actions">
+    ${a.status!=='done'?`<button class="btn btn-primary btn-sm" style="flex:1" onclick="markAppt('${a.id}','done')">标记完成</button>`:''}
+    <button class="btn btn-outline btn-sm" style="flex:1" onclick="delAppt('${a.id}')">删除</button>
+  </div>`);
+}
+function markAppt(id,s){const i=db.appointments.findIndex(x=>x.id===id);if(i<0)return;db.appointments[i].status=s;saveDB(db);closeModal();showToast('已更新');renderAppt()}
+function delAppt(id){if(!confirm('确定删除？'))return;db.appointments=db.appointments.filter(x=>x.id!==id);saveDB(db);closeModal();showToast('已删除');renderAppt()}
+
+// ===== CONSULT =====
+function showConsult(topic){
+  const tips={'急诊指南':'<b>误食异物</b>：不要催吐，立即就医<br><br><b>中毒</b>：记录中毒源，立即前往最近急诊<br><br><b>外伤出血</b>：干净纱布按压止血，尽快就医<br><br><b>呼吸困难</b>：保持通风，立即急诊<br><br><b>抽搐</b>：不要强行按压，移开周围物品，记录持续时间',
+  '用药咨询':'<b>驱虫药</b>：按体重选择剂量，内驱每月一次<br><br><b>疫苗</b>：幼犬三针+狂犬，成犬每年加强<br><br><b>人药禁忌</b>：布洛芬、对乙酰氨基酚对宠物有毒<br><br><b>用药原则</b>：务必遵医嘱，不自行用药<br><br><b>外用药</b>：戴伊丽莎白圈防止舔舐',
+  '饮食建议':'<b>禁食清单</b>：巧克力、葡萄、洋葱、木糖醇、澳洲坚果<br><br><b>喂食频率</b>：幼犬3-4次/天，成犬2次/天<br><br><b>饮水</b>：保证24小时清洁饮水<br><br><b>换粮</b>：新旧粮混合，7天逐步过渡<br><br><b>零食</b>：不超过每日总量的10%',
+  '行为异常':'<b>频繁舔爪</b>：可能过敏或焦虑<br><br><b>食欲下降</b>：超过24h不进食需就医<br><br><b>异常吠叫</b>：排除疼痛，可能是分离焦虑<br><br><b>频繁喝水</b>：警惕肾脏问题<br><br><b>突然攻击性</b>：可能疼痛导致，需检查'};
+  openModal(`<div class="modal-hd"><h2>💡 ${topic}</h2><button class="modal-close" onclick="closeModal()">✕</button></div><div style="line-height:1.8;font-size:14px;color:var(--t2)">${tips[topic]||''}</div><div style="margin-top:16px;padding:12px;background:#FFF3E0;border-radius:var(--r);font-size:13px;color:#E65100">⚠️ 以上仅供参考，具体情况请咨询专业兽医</div>`);
+}
+
+// ===== PROFILE =====
+function renderProfile(){
+  const p=curPet();if(!p){document.getElementById('profileContent').innerHTML='<div class="empty"><div class="ico">🐾</div><p>暂无宠物</p><button class="btn btn-primary" onclick="openAddPet()">添加宠物</button></div>';return}
+  const gl=p.gender==='male'?'♂️ 男孩':'♀️ 女孩',gc=p.gender==='male'?'badge-blue':'badge-orange';
+  const avatarHtml=p.avatarData?`<img src="${p.avatarData}" class="avatar-upload" style="cursor:default;border:4px solid var(--c1l);border-radius:50%;width:100px;height:100px;object-fit:cover;display:block;margin:0 auto 12px">`:`<div style="text-align:center;font-size:72px;margin-bottom:12px">${p.avatar||'🐾'}</div>`;
+  document.getElementById('profileContent').innerHTML=`
+  <div class="card" style="text-align:center">
+    ${avatarHtml}
+    <div class="profile-name">${p.name}</div>
+    <div class="profile-breed">${p.breed||'未设置品种'}</div>
+    <div class="profile-badges">
+      <span class="badge ${gc}">${gl}</span>
+      <span class="badge badge-orange">🎂 ${petAge(p.birthday)}</span>
+      ${p.weight?`<span class="badge badge-green">⚖️ ${p.weight}kg</span>`:''}
+    </div>
+    <div class="info-grid">
+      <div class="info-cell"><div class="label">生日</div><div class="value">${fmtD(p.birthday)||'-'}</div></div>
+      <div class="info-cell"><div class="label">芯片号</div><div class="value">${p.chipNumber||'-'}</div></div>
+      <div class="info-cell"><div class="label">绝育</div><div class="value">${p.neutered?'已绝育 ✅':'未绝育'}</div></div>
+      <div class="info-cell"><div class="label">血型</div><div class="value">${p.bloodType||'-'}</div></div>
+      <div class="info-cell" style="grid-column:span 2"><div class="label">性格</div><div class="value">${p.personality||'-'}</div></div>
+    </div>
+  </div>
+  <div class="card"><div class="card-title">📊 数据统计</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;text-align:center">
+      <div><div style="font-size:24px;font-weight:800;color:var(--c1)">${db.healthRecords.filter(r=>r.petId===p.id).length}</div><div style="font-size:12px;color:var(--t3)">健康记录</div></div>
+      <div><div style="font-size:24px;font-weight:800;color:var(--c1)">${db.dailyLogs.filter(r=>r.petId===p.id).length}</div><div style="font-size:12px;color:var(--t3)">日常记录</div></div>
+      <div><div style="font-size:24px;font-weight:800;color:var(--c1)">${db.appointments.filter(r=>r.petId===p.id).length}</div><div style="font-size:12px;color:var(--t3)">预约次数</div></div>
+    </div>
+  </div>
+  ${db.pets.length>1?`<div class="px16"><button class="btn btn-outline btn-block btn-sm" onclick="switchPetProfile()">切换宠物</button></div>`:''}
+  <div class="px16 mt12"><button class="btn btn-outline btn-block btn-sm" onclick="openAddPet()">+ 添加新宠物</button></div>
+  <div class="px16 mt12"><button class="btn btn-danger btn-block btn-sm" onclick="delPet()">删除当前宠物</button></div>
+  <div style="text-align:center;padding:20px 0 8px;font-size:12px;color:var(--t3)">萌宠管家 v1.1.0</div>`;
+}
+function switchPetProfile(){
+  let o='';db.pets.forEach((p,i)=>{o+=`<div class="rec" onclick="switchPet(${i});closeModal();nav('profile')"><div class="rec-icon" style="background:var(--c1l);font-size:24px">${petAvatarHTML(p,36)}</div><div class="rec-info"><h4>${p.name}</h4><p>${p.breed||''}</p></div>${i===db.activePetIdx?'<span style="color:var(--c1);font-weight:700">当前</span>':''}</div>`});
+  openModal(`<div class="modal-hd"><h2>选择宠物</h2><button class="modal-close" onclick="closeModal()">✕</button></div>${o}`);
+}
+function openEditPet(){
+  const p=curPet();if(!p)return;
+  const avHtml=p.avatarData?`<img src="${p.avatarData}">`:`<div class="avatar-placeholder">${p.avatar||'🐾'}</div>`;
+  openModal(`<div class="modal-hd"><h2>编辑宠物信息</h2><button class="modal-close" onclick="closeModal()">✕</button></div>
+  <form onsubmit="savePetEdit(event)">
+    <div class="form-group" style="text-align:center">
+      <label class="form-label">点击更换头像</label>
+      <div class="avatar-upload" id="avatarUploadArea">
+        ${avHtml}
+        <div class="avatar-edit">📷</div>
+        <input type="file" accept="image/*" capture="environment" id="avatarFileInput" onchange="handleAvatarUpload(this)">
+      </div>
+    </div>
+    <div class="form-group"><label class="form-label">昵称</label><input type="text" class="form-input" id="p_name" value="${p.name}" required></div>
+    <div class="form-group"><label class="form-label">品种</label><input type="text" class="form-input" id="p_breed" value="${p.breed||''}"></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">性别</label><select class="form-input" id="p_gender"><option value="male" ${p.gender==='male'?'selected':''}>男孩 ♂️</option><option value="female" ${p.gender==='female'?'selected':''}>女孩 ♀️</option></select></div>
+      <div class="form-group"><label class="form-label">生日</label><input type="date" class="form-input" id="p_birthday" value="${p.birthday||''}"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">体重(kg)</label><input type="number" step="0.1" class="form-input" id="p_weight" value="${p.weight||''}"></div>
+      <div class="form-group"><label class="form-label">芯片号</label><input type="text" class="form-input" id="p_chip" value="${p.chipNumber||''}"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">绝育</label><select class="form-input" id="p_neutered"><option value="true" ${p.neutered?'selected':''}>已绝育</option><option value="false" ${!p.neutered?'selected':''}>未绝育</option></select></div>
+      <div class="form-group"><label class="form-label">血型</label><input type="text" class="form-input" id="p_blood" value="${p.bloodType||''}"></div>
+    </div>
+    <div class="form-group"><label class="form-label">性格</label><input type="text" class="form-input" id="p_personality" value="${p.personality||''}"></div>
+    <input type="hidden" id="p_avatarData" value="">
+    <button type="submit" class="btn btn-primary btn-block">保存</button>
+  </form>`);
+  document.getElementById('avatarUploadArea').addEventListener('click',function(e){if(e.target.tagName!=='INPUT')document.getElementById('avatarFileInput').click()});
+}
+function handleAvatarUpload(input){
+  if(!input.files[0])return;
+  compressImage(input.files[0],300,0.8).then(data=>{
+    document.getElementById('p_avatarData').value=data;
+    const area=document.getElementById('avatarUploadArea');
+    const existing=area.querySelector('img')||area.querySelector('.avatar-placeholder');
+    if(existing.tagName==='IMG'){existing.src=data}
+    else{const img=document.createElement('img');img.src=data;area.replaceChild(img,existing)}
+    showToast('头像已更新');
+  });
+}
+function savePetEdit(e){
+  e.preventDefault();const p=curPet();
+  p.name=$v('p_name');p.breed=$v('p_breed');p.gender=$v('p_gender');p.birthday=$v('p_birthday');
+  p.weight=$v('p_weight');p.chipNumber=$v('p_chip');p.neutered=$v('p_neutered')==='true';
+  p.bloodType=$v('p_blood');p.personality=$v('p_personality');
+  const ad=$v('p_avatarData');if(ad)p.avatarData=ad;
+  saveDB(db);closeModal();showToast('已保存');renderProfile();renderHome();
+}
+function openAddPet(){
+  openModal(`<div class="modal-hd"><h2>添加宠物</h2><button class="modal-close" onclick="closeModal()">✕</button></div>
+  <form onsubmit="saveNewPet(event)">
+    <div class="form-group" style="text-align:center">
+      <label class="form-label">上传头像（可选）</label>
+      <div class="avatar-upload" id="newAvatarArea">
+        <div class="avatar-placeholder">🐾</div>
+        <div class="avatar-edit">📷</div>
+        <input type="file" accept="image/*" capture="environment" id="newAvatarInput" onchange="handleNewAvatarUpload(this)">
+      </div>
+    </div>
+    <div class="form-group"><label class="form-label">昵称</label><input type="text" class="form-input" id="np_name" required placeholder="宠物昵称"></div>
+    <div class="form-group"><label class="form-label">品种</label><input type="text" class="form-input" id="np_breed" placeholder="品种"></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">性别</label><select class="form-input" id="np_gender"><option value="male">男孩 ♂️</option><option value="female">女孩 ♀️</option></select></div>
+      <div class="form-group"><label class="form-label">生日</label><input type="date" class="form-input" id="np_birthday"></div>
+    </div>
+    <input type="hidden" id="np_avatarData" value="">
+    <button type="submit" class="btn btn-primary btn-block">添加</button>
+  </form>`);
+  document.getElementById('newAvatarArea').addEventListener('click',function(e){if(e.target.tagName!=='INPUT')document.getElementById('newAvatarInput').click()});
+}
+function handleNewAvatarUpload(input){
+  if(!input.files[0])return;
+  compressImage(input.files[0],300,0.8).then(data=>{
+    document.getElementById('np_avatarData').value=data;
+    const area=document.getElementById('newAvatarArea');
+    const existing=area.querySelector('.avatar-placeholder');
+    if(existing){const img=document.createElement('img');img.src=data;area.replaceChild(img,existing)}
+    else{area.querySelector('img').src=data}
+    showToast('头像已选择');
+  });
+}
+function saveNewPet(e){
+  e.preventDefault();const p={id:gid(),name:$v('np_name'),avatar:'🐾',avatarData:$v('np_avatarData'),breed:$v('np_breed'),gender:$v('np_gender'),birthday:$v('np_birthday'),weight:'',chipNumber:'',neutered:false,bloodType:'',personality:''};
+  db.pets.push(p);db.activePetIdx=db.pets.length-1;saveDB(db);closeModal();showToast('已添加');renderHome();
+}
+function delPet(){
+  const p=curPet();if(!p)return;
+  if(!confirm('确定删除 '+p.name+' 的所有数据？此操作不可恢复！'))return;
+  const pid=p.id;db.healthRecords=db.healthRecords.filter(r=>r.petId!==pid);db.dailyLogs=db.dailyLogs.filter(r=>r.petId!==pid);db.appointments=db.appointments.filter(r=>r.petId!==pid);
+  db.pets.splice(db.activePetIdx,1);db.activePetIdx=0;saveDB(db);showToast('已删除');
+  if(db.pets.length===0){nav('home')}else{nav('profile')}
+}
+
+// ===== HELPER =====
+function $v(id){return document.getElementById(id)?.value||''}
+
+// ===== THEME =====
+const THEME_META={'coral':'#FF9A76','ocean':'#5B9BD5','forest':'#6BAF7A','lavender':'#9B8EC4','rose':'#E07B8C','dark':'#1A1A2E','auto':'#FF9A76'};
+function resolveThemeColor(t){
+  if(t==='auto'){return window.matchMedia('(prefers-color-scheme:dark)').matches?'#1A1A2E':'#FF9A76'}
+  return THEME_META[t]||'#FF9A76';
+}
+function applyTheme(t){
+  document.documentElement.setAttribute('data-theme',t);
+  if(t==='auto'){
+    const isDark=window.matchMedia('(prefers-color-scheme:dark)').matches;
+    document.documentElement.classList.toggle('is-dark',isDark);
+  }else{document.documentElement.classList.remove('is-dark')}
+  document.querySelector('meta[name=theme-color]').content=resolveThemeColor(t);
+}
+function setTheme(t){
+  db.theme=t;saveDB(db);applyTheme(t);
+  showToast(t==='auto'?'已跟随系统':'主题已切换');
+  closeModal();
+}
+function loadTheme(){
+  const t=db.theme||'coral';applyTheme(t);
+  window.matchMedia('(prefers-color-scheme:dark)').addEventListener('change',()=>{if(db.theme==='auto')applyTheme('auto')});
+}
+function openThemeModal(){
+  const cur=db.theme||'coral';
+  const themes=[['auto','🔄','跟随系统','linear-gradient(135deg,#FF9A76 50%,#1A1A2E 50%)'],['coral','🌅','珊瑚橙','#FF9A76'],['ocean','🌊','海洋蓝','#5B9BD5'],['forest','🌲','森林绿','#6BAF7A'],['lavender','💜','薰衣草','#9B8EC4'],['rose','🌸','玫瑰粉','#E07B8C'],['dark','🌙','深色模式','#1A1A2E']];
+  const cards=themes.map(([k,ic,nm,cl])=>{
+    const isDark=k==='dark';
+    const bg=isDark?'background:#1A1A2E;color:#eee':'background:var(--bg)';
+    return `<div class="theme-card ${cur===k?'active':''}" onclick="setTheme('${k}')" style="${bg}"><div class="tc-dot" style="background:${cl}">${ic}</div><div class="tc-name">${nm}</div></div>`;
+  }).join('');
+  openModal(`<div class="modal-hd"><h2>🎨 主题设置</h2><button class="modal-close" onclick="closeModal()">✕</button></div>
+  <div class="theme-section">
+    <div class="theme-grid">${cards}</div>
+  </div>
+  <div style="margin-top:16px;padding:12px;background:var(--bg);border-radius:var(--r);font-size:13px;color:var(--t2);line-height:1.6">
+    💡 选择「跟随系统」将自动适配手机的浅色/深色模式切换
+  </div>`);
+}
+
+// ===== PWA INSTALL =====
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;document.getElementById('installBanner').classList.add('show')});
+function installApp(){
+  if(deferredPrompt){deferredPrompt.prompt();deferredPrompt.userChoice.then(r=>{if(r.outcome==='accepted')showToast('正在安装...');deferredPrompt=null;document.getElementById('installBanner').classList.remove('show')})}
+  else{
+    const ua=navigator.userAgent;
+    if(/iPhone|iPad/.test(ua)){openModal(`<div class="modal-hd"><h2>📲 安装到iPhone</h2><button class="modal-close" onclick="closeModal()">✕</button></div><div style="line-height:2;font-size:14px;color:var(--t2)"><p>1. 点击 Safari 底部的 <b>分享按钮</b> ↑</p><p>2. 向下滚动，选择 <b>"添加到主屏幕"</b></p><p>3. 点击右上角 <b>"添加"</b></p><p style="margin-top:12px;color:var(--c1);font-weight:600">✅ 添加后即可像原生APP一样使用</p></div>`)}
+    else{openModal(`<div class="modal-hd"><h2>📲 安装到手机</h2><button class="modal-close" onclick="closeModal()">✕</button></div><div style="line-height:2;font-size:14px;color:var(--t2)"><p>1. 点击浏览器右上角 <b>菜单 ⋮</b></p><p>2. 选择 <b>"添加到主屏幕"</b> 或 <b>"安装应用"</b></p><p style="margin-top:12px;color:var(--c1);font-weight:600">✅ 安装后即可全屏使用</p></div>`)}
+  }
+}
+
+// ===== SERVICE WORKER =====
+if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js').catch(()=>{})}
+
+// ===== iOS standalone detection =====
+if(window.navigator.standalone===true){document.body.style.paddingTop='env(safe-area-inset-top)'}
+
+// ===== INIT =====
+loadTheme();
+if(db.pets.length===0){openAddPet()}
+renderHome();
+</script>
+</body>
+</html>

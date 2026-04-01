@@ -1,0 +1,23 @@
+{
+  "name": "萌宠管家",
+  "short_name": "萌宠管家",
+  "version": "1.1.0",
+  "description": "宠物健康管理与日常记录APP",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FFFBF7",
+  "theme_color": "#FF9A76",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/icon-192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "/icon-512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml"
+    }
+  ]
+}

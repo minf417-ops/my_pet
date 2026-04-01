@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>萌宠时光 - 记录爱宠的每一个瞬间</title>
+    <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #FF9A76;
+            --primary-light: #FFD4C4;
+            --primary-dark: #FF7B54;
+            --secondary: #A8E6CF;
+            --secondary-light: #DCFAF0;
+            --accent: #FFD93D;
+            --bg-cream: #FFFBF7;
+            --bg-white: #FFFFFF;
+            --text-dark: #4A4A4A;
+            --text-medium: #7A7A7A;
+            --text-light: #AAAAAA;
+            --shadow-soft: 0 8px 32px rgba(255, 154, 118, 0.15);
+            --shadow-card: 0 12px 40px rgba(0, 0, 0, 0.08);
+            --radius-sm: 16px;
+            --radius-md: 24px;
+            --radius-lg: 32px;
+            --radius-xl: 40px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Nunito', 'ZCOOL KuaiLe', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(180deg, var(--bg-cream) 0%, #FFF5EE 100%);
+            color: var(--text-dark);
+            min-height: 100vh;
+        }
+
+        .app-container {
+            max-width: 480px;
+            margin: 0 auto;
+            min-height: 100vh;
+            background: var(--bg-white);
+            position: relative;
+            box-shadow: 0 0 80px rgba(255, 154, 118, 0.2);
+            border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+            overflow: hidden;
+        }
+
+        /* 卡通头部 */
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            padding: 24px 20px;
+            border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50px;
+            right: -30px;
+            width: 150px;
+            height: 150px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 50%;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo {
+            font-size: 26px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: 'ZCOOL KuaiLe', cursive;
+        }
+
+        .logo-icon {
+            font-size: 36px;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        .icon-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .icon-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1) rotate(10deg);
+        }
+
+        /* 宠物选择器 */
+        .pet-selector {
+            display: flex;
+            gap: 16px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .pet-avatar {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .pet-avatar-img {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            object-fit: cover;
+            transition: all 0.3s ease;
+        }
+
+        .pet-avatar.active .pet-avatar-img {
+            border-color: white;
+            transform: scale(1.15);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .pet-avatar-name {
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .add-pet-btn {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            border: 3px dashed rgba(255, 255, 255, 0.5);
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .add-pet-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: scale(1.1) rotate(90deg);
+        }
+
+        /* 主要内容 */
+        .main-content {
+            padding: 24px 20px 120px;
+        }
+
+        /* 快捷操作 */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: 28px;
+        }
+
+        .quick-action-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            padding: 18px 8px;
+            background: var(--bg-white);
+            border: none;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-soft);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .quick-action-btn:hover {
+            transform: translateY(-6px);
+            box-shadow: var(--shadow-card);
+        }
+
+        .quick-action-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+        }
+
+        .quick-action-btn:nth-child(1) .quick-action-icon { background: #FFE5E5; }
+        .quick-action-btn:nth-child(2) .quick-action-icon { background: #E5F3FF; }
+        .quick-action-btn:nth-child(3) .quick-action-icon { background: #FFF9E5; }
+        .quick-action-btn:nth-child(4) .quick-action-icon { background: #E8F5E9; }
+
+        .quick-action-text {
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        /* 区块标题 */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'ZCOOL KuaiLe', cursive;
+        }
+
+        .section-more {
+            font-size: 14px;
+            color: var(--primary);
+            font-weight: 700;
+            padding: 8px 16px;
+            background: var(--primary-light);
+            border-radius: 20px;
+            text-decoration: none;
+        }
+
+        /* 健康记录 */
+        .health-cards {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 28px;
+        }
+
+        .health-card {
+            background: var(--bg-white);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            box-shadow: var(--shadow-soft);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .health-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-card);
+        }
+
+        .health-card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+
+        .health-card-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+        }
+
+        .health-card.vaccine .health-card-icon { background: #E3F2FD; }
+        .health-card.deworm .health-card-icon { background: #F3E5F5; }
+        .health-card.weight .health-card-icon { background: #FFF3E0; }
+        .health-card.medical .health-card-icon { background: #FFEBEE; }
+
+        .health-card-title {
+            font-size: 15px;
+            font-weight: 700;
+        }
+
+        .health-card-content {
+            font-size: 14px;
+            color: var(--text-medium);
+            margin-bottom: 10px;
+        }
+
+        .health-card-date {
+            font-size: 13px;
+            color: var(--primary);
+            font-weight: 700;
+            background: var(--primary-light);
+            padding: 6px 12px;
+            border-radius: 12px;
+            display: inline-block;
+        }
+
+        /* 提醒列表 */
+        .reminder-list {
+            background: var(--bg-white);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            box-shadow: var(--shadow-soft);
+            margin-bottom: 28px;
+        }
+
+        .reminder-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 0;
+            border-bottom: 2px dashed #f0f0f0;
+        }
+
+        .reminder-item:last-child {
+            border-bottom: none;
+        }
+
+        .reminder-checkbox {
+            width: 26px;
+            height: 26px;
+            border: 3px solid var(--primary-light);
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .reminder-checkbox.checked {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+
+        .reminder-content {
+            flex: 1;
+        }
+
+        .reminder-title {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .reminder-title.completed {
+            text-decoration: line-through;
+            color: var(--text-light);
+        }
+
+        .reminder-time {
+            font-size: 13px;
+            color: var(--text-light);
+        }
+
+        .reminder-pet {
+            font-size: 12px;
+            color: var(--primary);
+            font-weight: 700;
+            background: var(--primary-light);
+            padding: 6px 12px;
+            border-radius: 14px;
+        }
+
+        /* 时间线 */
+        .timeline-card {
+            background: var(--bg-white);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: var(--shadow-soft);
+        }
+
+        .timeline-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 14px;
+        }
+
+        .timeline-user {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .timeline-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--primary-light);
+        }
+
+        .timeline-info h4 {
+            font-size: 17px;
+            font-weight: 800;
+            font-family: 'ZCOOL KuaiLe', cursive;
+        }
+
+        .timeline-info span {
+            font-size: 13px;
+            color: var(--text-light);
+        }
+
+        .timeline-tag {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .timeline-tag.daily { background: #F3E5F5; color: #7B1FA2; }
+        .timeline-tag.feeding { background: #FFE5E5; color: #E53935; }
+        .timeline-tag.health { background: #E3F2FD; color: #1976D2; }
+
+        .timeline-text {
+            font-size: 15px;
+            line-height: 1.7;
+            color: var(--text-medium);
+            margin-bottom: 14px;
+        }
+
+        .timeline-images {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+
+        .timeline-image {
+            aspect-ratio: 1;
+            border-radius: var(--radius-sm);
+            object-fit: cover;
+        }
+
+        .timeline-footer {
+            display: flex;
+            gap: 24px;
+            padding-top: 14px;
+            border-top: 2px solid #f5f5f5;
+        }
+
+        .timeline-action {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            color: var(--text-light);
+            font-weight: 600;
+        }
+
+        /* 底部导航 */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 480px;
+            background: white;
+            border-top: 2px solid var(--primary-light);
+            padding: 12px 20px 24px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            cursor: pointer;
+            border: none;
+            background: none;
+            color: var(--text-light);
+        }
+
+        .nav-item.active {
+            color: var(--primary);
+            transform: translateY(-4px);
+        }
+
+        .nav-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .nav-item.active .nav-icon {
+            background: var(--primary-light);
+        }
+
+        .nav-text {
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .nav-add {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            font-size: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: -32px;
+            border: 4px solid white;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <header class="header">
+            <div class="header-top">
+                <div class="logo">
+                    <span class="logo-icon">🐾</span>
+                    <span>萌宠时光</span>
+                </div>
+                <div class="header-actions">
+                    <button class="icon-btn">🔔</button>
+                    <button class="icon-btn">⚙️</button>
+                </div>
+            </div>
+            
+            <div class="pet-selector">
+                <div class="pet-avatar active">
+                    <img src="https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=150" class="pet-avatar-img">
+                    <span class="pet-avatar-name">旺财</span>
+                </div>
+                <div class="pet-avatar">
+                    <img src="https://images.unsplash.com/photo-1574158622682-e40e69881006?w=150" class="pet-avatar-img">
+                    <span class="pet-avatar-name">咪咪</span>
+                </div>
+                <div class="pet-avatar">
+                    <img src="https://images.unsplash.com/photo-1425082661705-1834bfd09dca?w=150" class="pet-avatar-img">
+                    <span class="pet-avatar-name">球球</span>
+                </div>
+                <div class="add-pet-btn">+</div>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <div class="quick-actions">
+                <button class="quick-action-btn">
+                    <div class="quick-action-icon">📝</div>
+                    <span class="quick-action-text">记日记</span>
+                </button>
+                <button class="quick-action-btn">
+                    <div class="quick-action-icon">💉</div>
+                    <span class="quick-action-text">健康</span>
+                </button>
+                <button class="quick-action-btn">
+                    <div class="quick-action-icon">⏰</div>
+                    <span class="quick-action-text">提醒</span>
+                </button>
+                <button class="quick-action-btn">
+                    <div class="quick-action-icon">📚</div>
+                    <span class="quick-action-text">百科</span>
+                </button>
+            </div>
+
+            <div class="section-header">
+                <h3 class="section-title">💊 健康记录</h3>
+                <a href="#" class="section-more">查看全部 →</a>
+            </div>
+            
+            <div class="health-cards">
+                <div class="health-card vaccine">
+                    <div class="health-card-header">
+                        <div class="health-card-icon">💉</div>
+                        <div>
+                            <div class="health-card-title">疫苗接种</div>
+                        </div>
+                    </div>
+                    <div class="health-card-content">狂犬疫苗 + 六联疫苗</div>
+                    <div class="health-card-date">2026-04-15</div>
+                </div>
+                
+                <div class="health-card deworm">
+                    <div class="health-card-header">
+                        <div class="health-card-icon">🐛</div>
+                        <div>
+                            <div class="health-card-title">驱虫记录</div>
+                        </div>
+                    </div>
+                    <div class="health-card-content">体内外同驱</div>
+                    <div class="health-card-date">2026-03-01</div>
+                </div>
+                
+                <div class="health-card weight">
+                    <div class="health-card-header">
+                        <div class="health-card-icon">⚖️</div>
+                        <div>
+                            <div class="health-card-title">体重记录</div>
+                        </div>
+                    </div>
+                    <div class="health-card-content">12.5 kg</div>
+                    <div class="health-card-date">较上月 +0.3kg</div>
+                </div>
+                
+                <div class="health-card medical">
+                    <div class="health-card-header">
+                        <div class="health-card-icon">🏥</div>
+                        <div>
+                            <div class="health-card-title">病历档案</div>
+                        </div>
+                    </div>
+                    <div class="health-card-content">常规体检</div>
+                    <div class="health-card-date">2026-02-20</div>
+                </div>
+            </div>
+
+            <div class="section-header">
+                <h3 class="section-title">⏰ 今日提醒</h3>
+                <a href="#" class="section-more">2个待办 →</a>
+            </div>
+            
+            <div class="reminder-list">
+                <div class="reminder-item">
+                    <div class="reminder-checkbox checked">✓</div>
+                    <div class="reminder-content">
+                        <div class="reminder-title completed">早晨喂食</div>
+                        <div class="reminder-time">🕐 08:00</div>
+                    </div>
+                    <span class="reminder-pet">旺财</span>
+                </div>
+                <div class="reminder-item">
+                    <div class="reminder-checkbox"></div>
+                    <div class="reminder-content">
+                        <div class="reminder-title">遛狗时间</div>
+                        <div class="reminder-time">🕐 18:30</div>
+                    </div>
+                    <span class="reminder-pet">旺财</span>
+                </div>
+            </div>
+
+            <div class="section-header">
+                <h3 class="section-title">📖 萌宠日记</h3>
+                <a href="#" class="section-more">查看全部 →</a>
+            </div>
+            
+            <div class="timeline-card">
+                <div class="timeline-header">
+                    <div class="timeline-user">
+                        <img src="https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=150" class="timeline-avatar">
+                        <div class="timeline-info">
+                            <h4>旺财</h4>
+                            <span>今天 14:30</span>
+                        </div>
+                    </div>
+                    <span class="timeline-tag daily">日常</span>
+                </div>
+                <p class="timeline-text">今天带旺财去公园玩，遇到了好多小伙伴！旺财特别开心，一直在草地上奔跑。还学会了和新朋友握手，太聪明了！🐕🎾</p>
+                <div class="timeline-images">
+                    <img src="https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=300" class="timeline-image">
+                    <img src="https://images.unsplash.com/photo-1530281700549-e82e7bf110d6?w=300" class="timeline-image">
+                    <img src="https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=300" class="timeline-image">
+                </div>
+                <div class="timeline-footer">
+                    <span class="timeline-action">❤️ 24</span>
+                    <span class="timeline-action">💬 5</span>
+                    <span class="timeline-action">📤 分享</span>
+                </div>
+            </div>
+        </main>
+
+        <nav class="bottom-nav">
+            <button class="nav-item active">
+                <span class="nav-icon">🏠</span>
+                <span class="nav-text">首页</span>
+            </button>
+            <button class="nav-item">
+                <span class="nav-icon">📅</span>
+                <span class="nav-text">记录</span>
+            </button>
+            <button class="nav-add">+</button>
+            <button class="nav-item">
+                <span class="nav-icon">💬</span>
+                <span class="nav-text">社区</span>
+            </button>
+            <button class="nav-item">
+                <span class="nav-icon">👤</span>
+                <span class="nav-text">我的</span>
+            </button>
+        </nav>
+    </div>
+</body>
+</html>

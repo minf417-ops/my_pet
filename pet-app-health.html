@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>萌宠时光 - 健康记录</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Nunito:wght@400;600;700;800&display=swap');
+        
+        :root {
+            --primary: #FF9A76;
+            --primary-light: #FFD4C4;
+            --primary-dark: #FF7B54;
+            --secondary: #A8E6CF;
+            --secondary-light: #DCFAF0;
+            --accent: #FFD93D;
+            --bg-cream: #FFFBF7;
+            --bg-white: #FFFFFF;
+            --text-dark: #4A4A4A;
+            --text-medium: #7A7A7A;
+            --text-light: #AAAAAA;
+            --shadow-soft: 0 8px 32px rgba(255, 154, 118, 0.15);
+            --radius-sm: 16px;
+            --radius-md: 24px;
+            --radius-lg: 32px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Nunito', 'ZCOOL KuaiLe', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-cream);
+            color: var(--text-dark);
+            min-height: 100vh;
+        }
+
+        .app-container {
+            max-width: 480px;
+            margin: 0 auto;
+            min-height: 100vh;
+            background: var(--bg-white);
+            position: relative;
+            box-shadow: 0 0 80px rgba(255, 154, 118, 0.2);
+        }
+
+        /* 头部 */
+        .header {
+            background: linear-gradient(135deg, var(--secondary) 0%, #7DD3C0 100%);
+            padding: 20px;
+            border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -30px;
+            right: -30px;
+            width: 120px;
+            height: 120px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 50%;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .back-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .header-title {
+            font-size: 22px;
+            font-weight: 800;
+            font-family: 'ZCOOL KuaiLe', cursive;
+        }
+
+        .add-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        /* 宠物信息 */
+        .pet-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .pet-avatar {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            object-fit: cover;
+        }
+
+        .pet-details h2 {
+            font-size: 20px;
+            font-weight: 800;
+            margin-bottom: 4px;
+        }
+
+        .pet-details p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* 主要内容 */
+        .main-content {
+            padding: 20px;
+            padding-bottom: 100px;
+        }
+
+        /* 健康概览 */
+        .health-overview {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .overview-card {
+            background: white;
+            border-radius: var(--radius-md);
+            padding: 20px 12px;
+            text-align: center;
+            box-shadow: var(--shadow-soft);
+        }
+
+        .overview-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin: 0 auto 12px;
+        }
+
+        .overview-card:nth-child(1) .overview-icon { background: #E3F2FD; }
+        .overview-card:nth-child(2) .overview-icon { background: #FFF3E0; }
+        .overview-card:nth-child(3) .overview-icon { background: #E8F5E9; }
+
+        .overview-number {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--text-dark);
+            margin-bottom: 4px;
+        }
+
+        .overview-label {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+
+        /* 分类标签 */
+        .category-tabs {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+        }
+
+        .category-tab {
+            padding: 12px 24px;
+            border-radius: 25px;
+            border: none;
+            background: var(--bg-cream);
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-medium);
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.3s ease;
+        }
+
+        .category-tab.active {
+            background: var(--secondary);
+            color: white;
+        }
+
+        /* 记录列表 */
+        .records-section {
+            margin-bottom: 24px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            font-family: 'ZCOOL KuaiLe', cursive;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: none;
+            background: var(--bg-cream);
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-medium);
+            cursor: pointer;
+        }
+
+        /* 记录卡片 */
+        .record-card {
+            background: white;
+            border-radius: var(--radius-md);
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: var(--shadow-soft);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .record-card::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: var(--secondary);
+        }
+
+        .record-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+
+        .record-type {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .type-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+        }
+
+        .type-info h4 {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+
+        .type-info span {
+            font-size: 13px;
+            color: var(--text-light);
+        }
+
+        .record-date {
+            text-align: right;
+        }
+
+        .date-day {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--secondary);
+        }
+
+        .date-month {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+
+        .record-content {
+            background: var(--bg-cream);
+            border-radius: var(--radius-sm);
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .record-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .record-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .item-label {
+            font-size: 14px;
+            color: var(--text-light);
+        }
+
+        .item-value {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .record-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .record-note {
+            font-size: 13px;
+            color: var(--text-medium);
+            font-style: italic;
+        }
+
+        .record-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .action-btn {
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: none;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .action-btn.edit {
+            background: var(--bg-cream);
+            color: var(--text-medium);
+        }
+
+        .action-btn.remind {
+            background: var(--secondary-light);
+            color: #2D8B9A;
+        }
+
+        /* 下次提醒 */
+        .next-reminder {
+            background: linear-gradient(135deg, #FFF3E0 0%, #FFE0B2 100%);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            margin-bottom: 24px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .next-reminder::before {
+            content: '⏰';
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 60px;
+            opacity: 0.2;
+        }
+
+        .reminder-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #E65100;
+            margin-bottom: 8px;
+        }
+
+        .reminder-content {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--text-dark);
+            margin-bottom: 12px;
+        }
+
+        .reminder-date {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: var(--text-medium);
+        }
+
+        .countdown {
+            background: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-weight: 700;
+            color: #E65100;
+        }
+
+        /* 体重图表占位 */
+        .chart-section {
+            background: white;
+            border-radius: var(--radius-md);
+            padding: 20px;
+            box-shadow: var(--shadow-soft);
+            margin-bottom: 24px;
+        }
+
+        .chart-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            font-family: 'ZCOOL KuaiLe', cursive;
+        }
+
+        .chart-placeholder {
+            height: 200px;
+            background: linear-gradient(180deg, var(--secondary-light) 0%, white 100%);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .chart-icon {
+            font-size: 48px;
+        }
+
+        .chart-text {
+            font-size: 14px;
+            color: var(--text-medium);
+        }
+
+        /* 底部导航 */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 480px;
+            background: white;
+            border-top: 2px solid var(--secondary-light);
+            padding: 12px 20px 24px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            cursor: pointer;
+            border: none;
+            background: none;
+            color: var(--text-light);
+            transition: all 0.3s ease;
+        }
+
+        .nav-item.active {
+            color: var(--secondary);
+            transform: translateY(-4px);
+        }
+
+        .nav-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            background: transparent;
+            transition: all 0.3s ease;
+        }
+
+        .nav-item.active .nav-icon {
+            background: var(--secondary-light);
+            box-shadow: 0 4px 12px rgba(126, 230, 207, 0.3);
+        }
+
+        .nav-text {
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .nav-add {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--secondary) 0%, #7DD3C0 100%);
+            color: white;
+            font-size: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: -32px;
+            box-shadow: 0 8px 24px rgba(126, 230, 207, 0.4);
+            cursor: pointer;
+            border: 4px solid white;
+            transition: all 0.3s ease;
+        }
+
+        .nav-add:hover {
+            transform: scale(1.1) rotate(90deg);
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- 头部 -->
+        <header class="header">
+            <div class="header-top">
+                <button class="back-btn">←</button>
+                <h1 class="header-title">健康档案 🏥</h1>
+                <button class="add-btn">+</button>
+            </div>
+            
+            <div class="pet-info">
+                <img src="https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=150" class="pet-avatar">
+                <div class="pet-details">
+                    <h2>旺财的健康档案</h2>
+                    <p>上次更新：2026-03-15</p>
+                </div>
+            </div>
+        </header>
+
+        <!-- 主要内容 -->
+        <main class="main-content">
+            <!-- 健康概览 -->
+            <div class="health-overview">
+                <div class="overview-card">
+                    <div class="overview-icon">💉</div>
+                    <div class="overview-number">8</div>
+                    <div class="overview-label">疫苗记录</div>
+                </div>
+                <div class="overview-card">
+                    <div class="overview-icon">🐛</div>
+                    <div class="overview-number">12</div>
+                    <div class="overview-label">驱虫记录</div>
+                </div>
+                <div class="overview-card">
+                    <div class="overview-icon">🏥</div>
+                    <div class="overview-number">3</div>
+                    <div class="overview-label">就诊记录</div>
+                </div>
+            </div>
+
+            <!-- 下次提醒 -->
+            <div class="next-reminder">
+                <div class="reminder-title">⏰ 下次提醒</div>
+                <div class="reminder-content">狂犬疫苗 + 六联疫苗接种</div>
+                <div class="reminder-date">
+                    <span>📅 2026年4月15日</span>
+                    <span class="countdown">还有16天</span>
+                </div>
+            </div>
+
+            <!-- 分类标签 -->
+            <div class="category-tabs">
+                <button class="category-tab active">全部记录</button>
+                <button class="category-tab">疫苗💉</button>
+                <button class="category-tab">驱虫🐛</button>
+                <button class="category-tab">体检🏥</button>
+                <button class="category-tab">体重⚖️</button>
+            </div>
+
+            <!-- 体重图表 -->
+            <div class="chart-section">
+                <h3 class="chart-title">📈 体重变化趋势</h3>
+                <div class="chart-placeholder">
+                    <span class="chart-icon">📊</span>
+                    <span class="chart-text">体重图表区域</span>
+                </div>
+            </div>
+
+            <!-- 记录列表 -->
+            <div class="records-section">
+                <div class="section-header">
+                    <h3 class="section-title">📝 最近记录</h3>
+                    <button class="filter-btn">筛选 ▼</button>
+                </div>
+
+                <!-- 记录卡片1 -->
+                <div class="record-card">
+                    <div class="record-header">
+                        <div class="record-type">
+                            <div class="type-icon" style="background:#E3F2FD">💉</div>
+                            <div class="type-info">
+                                <h4>疫苗接种</h4>
+                                <span>狂犬疫苗 + 六联疫苗</span>
+                            </div>
+                        </div>
+                        <div class="record-date">
+                            <div class="date-day">15</div>
+                            <div class="date-month">2026.03</div>
+                        </div>
+                    </div>
+                    
+                    <div class="record-content">
+                        <div class="record-item">
+                            <span class="item-label">接种医院</span>
+                            <span class="item-value">宠爱动物医院</span>
+                        </div>
+                        <div class="record-item">
+                            <span class="item-label">医生</span>
+                            <span class="item-value">李医生</span>
+                        </div>
+                        <div class="record-item">
+                            <span class="item-label">下次接种</span>
+                            <span class="item-value">2026-04-15</span>
+                        </div>
+                    </div>
+                    
+                    <div class="record-footer">
+                        <span class="record-note">💬 接种后观察30分钟，无不良反应</span>
+                        <div class="record-actions">
+                            <button class="action-btn edit">编辑</button>
+                            <button class="action-btn remind">提醒</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 记录卡片2 -->
+                <div class="record-card">
+                    <div class="record-header">
+                        <div class="record-type">
+                            <div class="type-icon" style="background:#F3E5F5">🐛</div>
+                            <div class="type-info">
+                                <h4>体内外驱虫</h4>
+                                <span>大宠爱体内外同驱</span>
+                            </div>
+                        </div>
+                        <div class="record-date">
+                            <div class="date-day">01</div>
+                            <div class="date-month">2026.03</div>
+                        </div>
+                    </div>
+                    
+                    <div class="record-content">
+                        <div class="record-item">
+                            <span class="item-label">驱虫品牌</span>
+                            <span class="item-value">大宠爱</span>
+                        </div>
+                        <div class="record-item">
+                            <span class="item-label">剂量</span>
+                            <span class="item-value">1支（适用于10-20kg）</span>
+                        </div>
+                        <div class="record-item">
+                            <span class="item-label">下次驱虫</span>
+                            <span class="item-value">2026-04-01</span>
+                        </div>
+                    </div>
+                    
+                    <div class="record-footer">
+                        <span class="record-note">💬 驱虫后禁食4小时</span>
+                        <div class="record-actions">
+                            <button class="action-btn edit">编辑</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 记录卡片3 -->
+                <div class="record-card">
+                    <div class="record-header">
+                        <div class="record-type">
+                            <div class="type-icon" style="background:#E8F5E9">⚖️</div>
+                            <div class="type-info">
+                                <h4>体重记录</h4>
+                                <span>月度称重</span>
+                            </div>
+                        </div>
+                        <div class="record-date">
+                            <div class="date-day">28</div>
+                            <div class="date-month">2026.02</div>
+                        </div>
+                    </div>
+                    
+                    <div class="record-content">
+                        <div class="record-item">
+                            <span class="item-label">当前体重</span>
+                            <span class="item-value">12.5 kg</span>
+                        </div>
+                        <div class="record-item">
+                            <span class="item-label">较上月</span>
+                            <span class="item-value" style="color:#4CAF50">+0.3 kg ↑</span>
+                        </div>
+                        <div class="record-item">
+                            <span class="item-label">BMI</span>
+                            <span class="item-value">正常范围</span>
+                        </div>
+                    </div>
+                    
+                    <div class="record-footer">
+                        <span class="record-note">💬 体重增长正常，继续保持</span>
+                        <div class="record-actions">
+                            <button class="action-btn edit">编辑</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- 底部导航 -->
+        <nav class="bottom-nav">
+            <button class="nav-item">
+                <span class="nav-icon">🏠</span>
+                <span class="nav-text">首页</span>
+            </button>
+            <button class="nav-item">
+                <span class="nav-icon">📖</span>
+                <span class="nav-text">日记</span>
+            </button>
+            <button class="nav-add">+</button>
+            <button class="nav-item active">
+                <span class="nav-icon">💊</span>
+                <span class="nav-text">健康</span>
+            </button>
+            <button class="nav-item">
+                <span class="nav-icon">👤</span>
+                <span class="nav-text">我的</span>
+            </button>
+        </nav>
+    </div>
+</body>
+</html>
